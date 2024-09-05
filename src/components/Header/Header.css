@@ -1,0 +1,145 @@
+.header {
+  background-color: #564280;
+  padding: 10px 20px; /* Added padding to ensure space around content */
+  width: 100%;
+  position: relative;
+  box-sizing: border-box; /* Ensure padding is included in total width */
+  overflow: hidden; /* Prevent content from overflowing */
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 100%; /* Ensure it doesn’t exceed viewport width */
+  box-sizing: border-box;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  margin-right: 10px; /* Added space between logo and search-container */
+  width: 100px;
+}
+
+.logo img {
+  max-height: 40px;
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+  margin-right: 10px; /* Added space between search-container and login-btn */
+}
+
+.search-input {
+  width: 150px; /* Adjust width of search input */
+  padding: 10px;
+  border-radius: 20px 0 0 20px;
+  border: 1px solid #ccc;
+  border-right: none;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1); /* Add a shadow to provide separation */
+}
+
+.search-btn {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: 1px solid #007bff;
+  border-radius: 0 20px 20px 0;
+  cursor: pointer;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1); /* Add a shadow to provide separation */
+}
+
+.login-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 14px;
+  width: 200px;
+  margin-left: 10px; /* Space between search-container and login-btn */
+  margin-right: 10px; /* Space from the screen edge */
+}
+
+/* Login modal styles */
+.login-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 1s forwards;
+  z-index: 9999; /* Ensure modal is on top */
+}
+
+.login-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  width: 300px;
+  max-width: 100%;
+  position: relative;
+  box-sizing: border-box; /* Ensure padding is included in total width */
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.input-field {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box; /* Ensure padding is included in total width */
+}
+
+.login-submit {
+  padding: 10px;
+  margin: 10px 0;
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+}
+
+.login-submit:hover {
+  background-color: #0056b3;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+.login-modal.fade-out {
+  animation: fadeOut 1s forwards;
+}

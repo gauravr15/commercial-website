@@ -1,0 +1,28 @@
+body {
+    overflow-x: hidden; /* Prevent horizontal overflow */
+  }
+  
+  .header {
+    width: 100%;
+    padding: 10px 20px;
+    box-sizing: border-box;
+    background-color: #564280;
+  }
+  
+  .header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .search-container, .login-btn {
+    margin-right: 5px; /* Add space between elements */
+  }
+  
+  .login-btn {
+    margin-right: 10px; /* Ensure it doesn't touch the screen edge */
+  }
+  

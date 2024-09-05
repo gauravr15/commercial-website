@@ -1,0 +1,25 @@
+/* src/components/TextSection/TextSection.css */
+.text-section-container {
+    margin-top: 20px; /* Space from any element above */
+    padding: 0 20px; /* Add padding to the sides */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center align the text horizontally */
+  }
+  
+  .text-section-heading {
+    font-family: 'Dancing Script', cursive; /* Use a calligraphy font */
+    font-size: 3rem; /* Adjust size as needed */
+    color: #333; /* Choose a color that contrasts well */
+    margin: 0;
+  }
+  
+  .text-section-paragraph {
+    font-family: Arial, sans-serif; /* Regular font for paragraph */
+    font-size: 1.2rem; /* Adjust size as needed */
+    color: #666; /* Choose a color that contrasts well with the background */
+    text-align: center; /* Center align the paragraph text */
+    margin-top: 10px; /* Space between heading and paragraph */
+    max-width: 800px; /* Limit width for better readability */
+  }
+  
