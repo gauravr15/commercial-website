@@ -1,145 +1,204 @@
+@import '~@fortawesome/fontawesome-free/css/all.min.css';
+
+/* Header container styling */
 .header {
-  background-color: #564280;
-  padding: 10px 20px; /* Added padding to ensure space around content */
+  display: flex;
+  justify-content: space-between; /* Space between elements */
+  align-items: center;
+  padding: 10px;
   width: 100%;
+  position: fixed;
+  top: 0;
+  z-index: 1000; /* Ensure header is on top */
+  height: 70px; /* Set a fixed height */
+  overflow: hidden; /* Prevent horizontal overflow */
+  background: linear-gradient(to bottom, #9c27b0, #6a1b9a); /* Gradient for cylindrical effect */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3), inset 0 4px 8px rgba(255, 255, 255, 0.2); /* 3D shadow effect */
   position: relative;
-  box-sizing: border-box; /* Ensure padding is included in total width */
-  overflow: hidden; /* Prevent content from overflowing */
 }
 
-.header-content {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.header::before {
+  content: "";
+  position: absolute;
+  bottom: -15px; /* Adjust to match the border-radius */
+  left: 0;
   width: 100%;
-  max-width: 100%; /* Ensure it doesn’t exceed viewport width */
-  box-sizing: border-box;
+  height: 15px; /* Height of the curved bottom effect */
+  background: inherit;
+  z-index: -1;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Shadow to create depth */
 }
 
-.logo {
+/* Brand logo styling */
+.brand-logo {
   display: flex;
-  align-items: center;
-  margin-right: 10px; /* Added space between logo and search-container */
+  align-items: center; /* Center logo vertically */
+  flex: 0; /* Space as much as the content */
+}
+
+.brand-logo img {
+  max-height: 50px; /* Adjusted height to fit the header */
   width: 100px;
+  filter: brightness(0.9) opacity(0.8); /* Softens the logo */
+  transition: filter 0.3s ease;
 }
 
-.logo img {
-  max-height: 40px;
+.brand-logo img:hover {
+  filter: brightness(1) opacity(1); /* Full brightness on hover */
 }
 
+/* Search container */
 .search-container {
   display: flex;
   align-items: center;
-  flex-grow: 1;
-  margin-right: 10px; /* Added space between search-container and login-btn */
-}
-
-.search-input {
-  width: 150px; /* Adjust width of search input */
-  padding: 10px;
-  border-radius: 20px 0 0 20px;
-  border: 1px solid #ccc;
-  border-right: none;
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1); /* Add a shadow to provide separation */
-}
-
-.search-btn {
-  padding: 10px 20px;
-  background-color: #007bff;
-  color: white;
-  border: 1px solid #007bff;
-  border-radius: 0 20px 20px 0;
-  cursor: pointer;
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1); /* Add a shadow to provide separation */
-}
-
-.login-btn {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  cursor: pointer;
-  border-radius: 5px;
-  font-size: 14px;
-  width: 200px;
-  margin-left: 10px; /* Space between search-container and login-btn */
-  margin-right: 10px; /* Space from the screen edge */
-}
-
-/* Login modal styles */
-.login-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
   justify-content: center;
-  align-items: center;
-  animation: fadeIn 1s forwards;
-  z-index: 9999; /* Ensure modal is on top */
-}
-
-.login-content {
-  background-color: white;
-  padding: 20px;
-  border-radius: 10px;
-  width: 300px;
-  max-width: 100%;
-  position: relative;
-  box-sizing: border-box; /* Ensure padding is included in total width */
-}
-
-.close-btn {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: none;
-  border: none;
-  font-size: 20px;
-  cursor: pointer;
-}
-
-.login-form {
-  display: flex;
-  flex-direction: column;
-}
-
-.input-field {
+  flex: 1; /* Allow the search container to grow */
+  padding: 0 100px;
+  max-width: 90%; /* Optional max-width */
   width: 100%;
-  padding: 10px;
-  margin: 10px 0;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  box-sizing: border-box; /* Ensure padding is included in total width */
 }
 
-.login-submit {
-  padding: 10px;
-  margin: 10px 0;
-  border: none;
-  border-radius: 5px;
+/* Search input and button shared properties */
+.search-input,
+.search-button {
+  height: 40px;
+  line-height: 1;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* Search input default width */
+.search-input {
+  width: 400px;
+  border-radius: 20px 0 0 20px; /* Softer edges */
+  border: 1px solid rgba(255, 255, 255, 0.4); /* Softer border */
+  outline: none;
+  transition: width 0.3s ease, box-shadow 0.3s ease; /* Smooth transition */
+  font-size: 16px;
+  padding-left: 10px;
+  background: rgba(255, 255, 255, 0.3); /* Soft background */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+}
+
+/* Search input expanded state */
+.search-container.expanded .search-input {
+  width: calc(100%); /* Adjust based on button width */
+}
+
+/* Search button */
+.search-button {
   background-color: #007bff;
   color: white;
   cursor: pointer;
+  border: none;
+  border-radius: 0 20px 20px 0; /* Softer edges */
+  height: 40px;
+  line-height: 40px;
+  padding: 0 10px; /* Reduce padding */
+  font-size: 14px;
+  width: 130px;
+  background: rgba(255, 255, 255, 0.2); /* Soft background */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+  transition: background 0.3s ease, box-shadow 0.3s ease; /* Smooth transition */
 }
 
-.login-submit:hover {
-  background-color: #0056b3;
+/* Placeholder text color for search input */
+.search-input::placeholder {
+  color: #ffffff; /* Change this to your desired color */
+  opacity: 0.8; /* Adjust opacity if needed */
 }
 
-/* Animations */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+
+.search-button:hover {
+  background-color: #0056b3; /* Darker shade on hover */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* Slightly deeper shadow */
 }
 
-@keyframes fadeOut {
-  from { opacity: 1; }
-  to { opacity: 0; }
+/* Login button */
+.login-button {
+  padding: 7px 14px; /* Adjust padding */
+  border: none;
+  background-color: #28a745;
+  color: white;
+  border-radius: 20px; /* Softer edges */
+  cursor: pointer;
+  font-size: 16px;
+  text-align: center;
+  flex-shrink: 0; /* Prevent shrinking */
+  width: 150px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+  transition: background 0.3s ease, transform 0.2s ease; /* Smooth transitions */
+  background: rgba(255, 255, 255, 0.2); /* Soft background */
 }
 
-.login-modal.fade-out {
-  animation: fadeOut 1s forwards;
+.login-button:hover {
+  background-color: #218838; /* Darker shade on hover */
+  transform: translateY(-2px); /* Slight upward hover effect */
+}
+
+/* SweetAlert modal styling */
+.responsive-swal {
+  width: 100% !important; /* Full width of the viewport */
+  max-width: 500px;
+  box-sizing: border-box;
+  padding: 20px;
+  overflow-x: hidden;
+}
+
+/* Responsive adjustments for smaller devices */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: center;
+    height: auto;
+    padding: 10px;
+  }
+
+  .brand-logo {
+    margin-bottom: 10px;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .search-container {
+    width: 100%;
+    padding: 0;
+    margin-bottom: 10px;
+  }
+
+  /* .search-input {
+    width: calc(100% - 50px);
+  } */
+
+  .login-button {
+    width: 50%;
+    font-size: 14px;
+    text-align: center;
+    margin-top: 10px;
+    align-self: center;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+  }
+
+  .responsive-swal {
+    width: 90% !important;
+    max-width: 100%;
+    padding: 15px;
+  }
+
+  .search-button {
+    font-size: 0; /* Hide the text "Search" */
+    padding: 0;
+    width: 20%; /* Remove padding for better alignment */
+  }
+
+  /* Add magnifying glass icon inside the button */
+  .search-button::before {
+    content: '\f002'; /* FontAwesome search icon */
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    font-size: 20px;
+    color: white;
+    display: inline-block;
+    line-height: 40px; /* Ensure icon is vertically aligned */
+  }
 }

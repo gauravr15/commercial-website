@@ -1,69 +1,77 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import SignInModal from '../SignInModal/SignInModal'; // Import the SignInModal component
 import './Header.css';
-import logo from '../../assets/logo.png';
-import Input from '../Input/Input'; // Import the Input component
+import logo from '../../assets/logo.png'; // Import the logo image
 
 const Header = () => {
-  const [isLoginVisible, setIsLoginVisible] = useState(false);
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false); // State to manage modal visibility
+  const searchContainerRef = useRef(null);
+  const searchInputRef = useRef(null);
+  const searchButtonRef = useRef(null);
 
-  const toggleLogin = () => {
-    setIsLoginVisible(!isLoginVisible);
+  const handleSearchClick = () => {
+    setIsExpanded(true);
   };
 
-  const handleSignIn = () => {
-    // Handle sign in logic
-    console.log('Sign In:', { username, password });
+  const handleButtonClick = (event) => {
+    event.stopPropagation(); // Prevents click from bubbling up to the document
+    setIsExpanded(true);
   };
 
-  const handleSignUp = () => {
-    // Handle sign up logic
-    console.log('Sign Up:', { username, password });
+  const handleClickOutside = (event) => {
+    if (
+      searchContainerRef.current &&
+      !searchContainerRef.current.contains(event.target) &&
+      !searchInputRef.current.contains(event.target) &&
+      !searchButtonRef.current.contains(event.target)
+    ) {
+      setIsExpanded(false);
+    }
   };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
 
   return (
-    <header className="header">
-      <div className="header-content">
-        <div className="logo">
-          <img src={logo} alt="Brand Logo" />
+    <>
+      <header className="header">
+        <div className="brand-logo">
+          <img src={logo} alt="Brand Logo" /> {/* Use the imported logo */}
         </div>
-        <div className="search-container">
-          <Input
+        <div
+          className={`search-container ${isExpanded ? 'expanded' : ''}`}
+          ref={searchContainerRef}
+        >
+          <input
             type="text"
+            className="search-input"
             placeholder="Search..."
+            onClick={handleSearchClick}
+            ref={searchInputRef}
           />
-          <button className="search-btn">Search</button>
+          <button
+            className="search-button"
+            onClick={handleButtonClick}
+            ref={searchButtonRef}
+          >
+            Search
+          </button>
         </div>
-        <button className="login-btn" onClick={toggleLogin}>
+        <button
+          className="login-button"
+          onClick={openModal} // Open the modal on click
+        >
           Login
         </button>
-      </div>
-
-      {isLoginVisible && (
-        <div className="login-modal">
-          <div className="login-content">
-            <button className="close-btn" onClick={toggleLogin}>×</button>
-            <div className="login-form">
-              <Input
-                type="text"
-                placeholder="Username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-              />
-              <Input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-              <button className="login-submit" onClick={handleSignIn}>Sign In</button>
-              <button className="login-submit" onClick={handleSignUp}>Sign Up</button>
-            </div>
-          </div>
-        </div>
-      )}
-    </header>
+      </header>
+      {isModalOpen && <SignInModal onClose={closeModal} />} {/* Render the modal */}
+    </>
   );
 };
 

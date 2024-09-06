@@ -1,9 +1,48 @@
-.input-field {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-sizing: border-box; /* Ensure padding is included in total width */
+/* Input.css */
+
+/* Styling for SweetAlert2 modal inputs */
+.swal2-input-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 0 10px; /* Adjust padding to fit within the modal */
+}
+
+.swal2-input {
+  width: calc(100% - 20px); /* Full width minus padding */
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  box-sizing: border-box; /* Ensure padding and border are included in width */
+}
+
+/* Adjust input container styling for smaller screens */
+@media (max-width: 768px) {
+  .swal2-input-container {
+    padding: 0 5px; /* Adjust padding for mobile screens */
   }
-  
+
+  .swal2-input {
+    width: calc(100% - 10px); /* Adjust width for smaller padding */
+    font-size: 14px; /* Adjust font size for better readability on mobile */
+  }
+}
+
+/* Style for the sign-in button */
+.sign-in-button {
+  background-color: #28a745;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin: 10px 0;
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 16px;
+}
+
+.sign-in-button:hover {
+  background-color: #218838;
+}
