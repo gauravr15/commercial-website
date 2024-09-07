@@ -80,9 +80,11 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Subtle shadow */
 }
 
-/* Search input expanded state */
-.search-container.expanded .search-input {
-  width: calc(100%); /* Adjust based on button width */
+/* Search input expanded state (Widescreen only) */
+@media (min-width: 992px) { /* Adjust the min-width value as needed */
+  .search-container.expanded .search-input {
+    width: calc(100%); /* Adjust based on button width */
+  }
 }
 
 /* Search button */
@@ -107,7 +109,6 @@
   color: #ffffff; /* Change this to your desired color */
   opacity: 0.8; /* Adjust opacity if needed */
 }
-
 
 .search-button:hover {
   background-color: #0056b3; /* Darker shade on hover */
@@ -165,10 +166,6 @@
     padding: 0;
     margin-bottom: 10px;
   }
-
-  /* .search-input {
-    width: calc(100% - 50px);
-  } */
 
   .login-button {
     width: 50%;

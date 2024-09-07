@@ -1,46 +1,105 @@
+/* Modal Overlay */
 .modal-overlay {
-    position: fixed; /* Fixed position to cover the entire viewport */
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000; /* Ensure it appears on top of other content */
-  }
-  
+  position: fixed; 
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000; 
+  overflow: hidden;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out; /* Delayed appearance/disappearance */
+}
+
+.modal-overlay.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Modal Content */
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 90%; /* Responsive width */
+  max-width: 400px; /* Max width for larger screens */
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+  opacity: 0;
+  transform: scale(0.9); /* Start slightly smaller for animation effect */
+  transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out; /* Modal appear/disappear transition */
+}
+
+.modal-overlay.show .modal-content {
+  opacity: 1;
+  transform: scale(1); /* Grows to full size */
+}
+
+/* Modal Input */
+.modal-input {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  box-sizing: border-box;
+}
+
+/* Beautified 3D Buttons */
+.modal-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 10px;
+  width: 100%;
+}
+
+.modal-buttons button {
+  width: 100%;
+  max-width: 200px;
+  margin-bottom: 10px;
+  padding: 10px 20px;
+  background: linear-gradient(145deg, #6c63ff, #5753d1); /* Gradient for 3D look */
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  box-shadow: 0 6px #4640b2; /* Shadow under button for 3D effect */
+  cursor: pointer;
+  transition: all 0.3s ease; /* Smooth transitions for hover */
+}
+
+.modal-buttons button:active {
+  box-shadow: 0 2px #4640b2; /* Shadow gets smaller on click */
+  transform: translateY(4px); /* Button moves down to give pressed effect */
+}
+
+.modal-buttons button:hover {
+  background: linear-gradient(145deg, #5753d1, #6c63ff); /* Slight color shift on hover */
+}
+
+/* Modal Close Button */
+.modal-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  border: none;
+  background: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+/* Media query for small screens */
+@media (max-width: 600px) {
   .modal-content {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    width: 90%;
-    max-width: 500px; /* Max width for larger screens */
-    position: relative; /* For positioning the close button */
+    width: 90%; /* Use the full width of the screen */
+    padding: 15px; /* Adjust padding */
   }
-  
-  .modal-input {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border-radius: 4px;
-    border: 1px solid #ddd;
-  }
-  
-  .modal-buttons {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 10px;
-  }
-  
-  .modal-close {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    border: none;
-    background: none;
-    font-size: 24px;
-    cursor: pointer;
-  }
-  
+}
