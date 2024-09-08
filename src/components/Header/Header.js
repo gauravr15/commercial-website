@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import SignInModal from '../SignInModal/SignInModal'; // Import the SignInModal component
+import Burger from '../Burger/Burger'; // Import the Burger component
 import './Header.css';
 import logo from '../../assets/logo.png'; // Import the logo image
 
@@ -41,34 +42,39 @@ const Header = () => {
   return (
     <>
       <header className="header">
-        <div className="brand-logo">
-          <img src={logo} alt="Brand Logo" /> {/* Use the imported logo */}
-        </div>
-        <div
-          className={`search-container ${isExpanded ? 'expanded' : ''}`}
-          ref={searchContainerRef}
-        >
-          <input
-            type="text"
-            className="search-input"
-            placeholder="Search..."
-            onClick={handleSearchClick}
-            ref={searchInputRef}
-          />
-          <button
-            className="search-button"
-            onClick={handleButtonClick}
-            ref={searchButtonRef}
+        <div className="header-content">
+          <Burger /> {/* Add the Burger component here */}
+          <div className="brand-logo-container">
+            <div className="brand-logo">
+              <img src={logo} alt="Brand Logo" /> {/* Use the imported logo */}
+            </div>
+          </div>
+          <div
+            className={`search-container ${isExpanded ? 'expanded' : ''}`}
+            ref={searchContainerRef}
           >
-            Search
+            <input
+              type="text"
+              className="search-input"
+              placeholder="Search..."
+              onClick={handleSearchClick}
+              ref={searchInputRef}
+            />
+            <button
+              className="search-button"
+              onClick={handleButtonClick}
+              ref={searchButtonRef}
+            >
+              Search
+            </button>
+          </div>
+          <button
+            className="login-button"
+            onClick={openModal} // Open the modal on click
+          >
+            Login
           </button>
         </div>
-        <button
-          className="login-button"
-          onClick={openModal} // Open the modal on click
-        >
-          Login
-        </button>
       </header>
       {isModalOpen && <SignInModal onClose={closeModal} />} {/* Render the modal */}
     </>

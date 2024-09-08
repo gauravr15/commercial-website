@@ -1,0 +1,61 @@
+/* Burger icon wrapper */
+.burger-wrapper {
+  position: relative; /* Ensure it's positioned relative to the header */
+  height: 100%;
+  margin-left: 20px;
+}
+
+/* Burger icon */
+.burger-icon {
+  cursor: pointer;
+  width: 24px; /* Adjusted width for mobile */
+  height: 16px; /* Adjusted height for mobile */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative; /* Ensure it stays within the header */
+  z-index: 1100; /* Ensure it is on top of the side menu */
+}
+
+/* Burger bars */
+.bar {
+  width: 100%;
+  height: 3px; /* Slightly thinner bars */
+  background-color: var(--header-foreground-color); /* Dynamic foreground color */
+}
+
+/* Side Menu */
+.side-menu {
+  position: fixed;
+  top: 0;
+  left: -250px;
+  width: 250px;
+  height: 100vh;
+  background: var(--header-bg); /* Match the background with the header */
+  color: white;
+  padding-top: 50px;
+  transition: left 0.3s ease;
+  z-index: 1000; /* Ensure it is below the burger icon */
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3), inset 0 4px 8px rgba(255, 255, 255, 0.2); /* Match the 3D effect */
+}
+
+.side-menu.open {
+  left: 0; /* Slide-in effect */
+}
+
+.side-menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.side-menu li {
+  padding: 15px;
+  font-size: 18px;
+  border-bottom: 1px solid #444;
+  cursor: pointer;
+}
+
+.side-menu li:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
