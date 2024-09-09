@@ -75,7 +75,7 @@ const Header = () => {
             className="login-button"
             onClick={openModal} // Open the modal on click
           >
-            Login
+            &#128100;
           </button>
         </div>
       </header>

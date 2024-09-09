@@ -124,24 +124,25 @@
 /* Login button */
 .login-button {
   padding: 7px 14px; /* Adjust padding */
-  border: none;
-  background-color: #28a745;
-  color: white;
+  border: none; /* Remove border */
+  background: transparent; /* Make button background transparent */
+  color: inherit; /* Inherit color from the parent element */
   border-radius: 20px; /* Softer edges */
-  cursor: pointer;
-  font-size: 16px;
-  text-align: center;
+  cursor: pointer; /* Pointer cursor on hover */
+  font-size: 20px; /* Font size */
+  text-align: center; /* Center text */
   flex-shrink: 0; /* Prevent shrinking */
-  width: 150px;
+  width: 50px; /* Width of the button */
   margin-right: 20px; /* Space between button and right edge */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Subtle shadow */
-  transition: background 0.3s ease, transform 0.2s ease; /* Smooth transitions */
-  background: rgba(255, 255, 255, 0.2); /* Soft background */
+  box-shadow: none; /* Remove box-shadow */
+  transition: background 0.3s ease, color 0.3s ease; /* Smooth transitions */
+  outline: none; /* Remove focus outline */
 }
 
+/* Optional: style for hover state to match the container's background */
 .login-button:hover {
-  background-color: #218838; /* Darker shade on hover */
-  transform: translateY(-2px); /* Slight upward hover effect */
+  background-color: rgba(255, 255, 255, 0.2); /* Slightly visible background on hover, adjust as needed */
+  color: white; /* Text color on hover */
 }
 
 /* SweetAlert modal styling */
