@@ -1,8 +1,13 @@
 /* Burger icon wrapper */
 .burger-wrapper {
-  position: relative; /* Ensure it's positioned relative to the header */
+  /* Ensure it's positioned relative to the header */
   height: 100%;
+  position: absolute; /* Positioning it relative to the screen */
+  left: 0;            /* Align to the extreme left */
+  top: 15px;          /* Adjust to match the logo's vertical position */
+  z-index: 1101;      /* Ensure it's above other elements */
   margin-left: 20px;
+  margin-top: 10px;
 }
 
 /* Burger icon */
@@ -35,12 +40,12 @@
   color: white;
   padding-top: 50px;
   transition: left 0.3s ease;
-  z-index: 1000; /* Ensure it is below the burger icon */
+  z-index: 1100; /* Ensure it is below the burger icon */
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3), inset 0 4px 8px rgba(255, 255, 255, 0.2); /* Match the 3D effect */
 }
 
 .side-menu.open {
-  left: 0; /* Slide-in effect */
+  left: 0;
 }
 
 .side-menu ul {
@@ -58,4 +63,11 @@
 
 .side-menu li:hover {
   background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive adjustments for smaller devices */
+@media (max-width: 768px) {
+  .burger-wrapper{
+    top: 20px;
+  }
 }

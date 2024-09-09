@@ -9,7 +9,7 @@
   top: 0;
   z-index: 1000;
   height: 70px;
-  overflow: hidden;
+  /* overflow: hidden; */
   --header-bg: linear-gradient(to bottom, #9c27b0, #6a1b9a); /* Define a CSS variable for the gradient background */
   background: var(--header-bg); /* Apply the variable */
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3), inset 0 4px 8px rgba(255, 255, 255, 0.2);
@@ -24,13 +24,13 @@
   width: 100%; /* Full width of the screen */
   padding: 0 20px; /* Padding of 20px on left and right */
   box-sizing: border-box; /* Ensure padding is included in the width calculation */
-  max-width: 100%; /* Limit maximum width */
   justify-content: space-between; /* Space out elements evenly */
 }
 
-/* Burger container */
-.burger-container {
-  margin-right: 20px; /* Space between burger and brand logo */
+/* New wrapper for burger and logo */
+.burger-logo-wrapper {
+  display: flex;
+  align-items: center;
 }
 
 /* Brand logo container */
@@ -38,12 +38,13 @@
   display: flex;
   justify-content: center; /* Center logo horizontally */
   max-width: 200px; /* Control the maximum width of the logo container */
+  margin-left: 20px;
 }
 
 /* Brand logo styling */
 .brand-logo img {
   max-height: 50px; /* Adjusted height to fit the header */
-  width: 100px;
+  width: auto;
   filter: brightness(0.9) opacity(0.8); /* Softens the logo */
   transition: filter 0.3s ease;
 }
@@ -168,9 +169,23 @@
     padding: 0 20px; /* Ensure 20px padding on left and right */
   }
 
+  /* Adjust burger and brand logo to be in the same row */
+  .burger-logo-wrapper {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: auto; /* Adjust width to fit both in one row */
+
+  }
+
+  .burger-container {
+    margin-right: 10px; /* Small spacing between burger and logo */
+  }
+
   .brand-logo-container {
-    margin-bottom: 10px;
-    width: 100%;
+    max-width: 150px; /* Adjust width to fit the logo better */
+    display: flex;
+    align-items: center;
     justify-content: center;
   }
 
@@ -186,19 +201,12 @@
     text-align: center;
     margin-top: 10px;
     align-self: center;
-    transition: background-color 0.2s ease, transform 0.2s ease;
-  }
-
-  .responsive-swal {
-    width: 90% !important;
-    max-width: 100%;
-    padding: 15px;
   }
 
   .search-button {
     font-size: 0; /* Hide the text "Search" */
     padding: 0;
-    width: 20%; /* Remove padding for better alignment */
+    width: 20%; /* Adjust width */
   }
 
   /* Add magnifying glass icon inside the button */
@@ -211,4 +219,5 @@
     display: inline-block;
     line-height: 40px; /* Ensure icon is vertically aligned */
   }
+  
 }

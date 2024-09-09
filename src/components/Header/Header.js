@@ -43,10 +43,13 @@ const Header = () => {
     <>
       <header className="header">
         <div className="header-content">
-          <Burger /> {/* Add the Burger component here */}
-          <div className="brand-logo-container">
-            <div className="brand-logo">
-              <img src={logo} alt="Brand Logo" /> {/* Use the imported logo */}
+          {/* New wrapper to combine burger and logo */}
+          <div className="burger-logo-wrapper">
+            <Burger /> {/* Burger component */}
+            <div className="brand-logo-container">
+              <div className="brand-logo">
+                <img src={logo} alt="Brand Logo" /> {/* Use the imported logo */}
+              </div>
             </div>
           </div>
           <div
