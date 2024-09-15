@@ -1,0 +1,22 @@
+/* General styling for the video player container */
+.parent-container {
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    width: 100%;             /* Full width */
+}
+
+/* Video player styling */
+.video-player {
+    width: 50%;               /* Default width for larger screens */
+    margin-top: 10px;        /* Space below the TextSection */
+}
+
+/* Responsive styling for mobile screens */
+@media (max-width: 600px) {
+    .video-player {
+        width: calc(100% - 6px); /* Full width minus 2px margin on each side */
+        margin-left: 2px;        /* 2px margin on the left */
+        margin-right: 2px;       /* 2px margin on the right */
+        box-sizing: border-box;  /* Include padding and border in the element's total width */
+    }
+}

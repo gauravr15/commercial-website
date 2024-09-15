@@ -9,7 +9,6 @@
   top: 0;
   z-index: 1000;
   height: 70px;
-  overflow: hidden;
   --header-bg: linear-gradient(to bottom, #9c27b0, #6a1b9a); /* Define a CSS variable for the gradient background */
   background: var(--header-bg); /* Apply the variable */
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3), inset 0 4px 8px rgba(255, 255, 255, 0.2);
@@ -24,13 +23,13 @@
   width: 100%; /* Full width of the screen */
   padding: 0 20px; /* Padding of 20px on left and right */
   box-sizing: border-box; /* Ensure padding is included in the width calculation */
-  max-width: 100%; /* Limit maximum width */
   justify-content: space-between; /* Space out elements evenly */
 }
 
-/* Burger container */
-.burger-container {
-  margin-right: 20px; /* Space between burger and brand logo */
+/* New wrapper for burger and logo */
+.burger-logo-wrapper {
+  display: flex;
+  align-items: center;
 }
 
 /* Brand logo container */
@@ -38,12 +37,13 @@
   display: flex;
   justify-content: center; /* Center logo horizontally */
   max-width: 200px; /* Control the maximum width of the logo container */
+  margin-left: 20px;
 }
 
 /* Brand logo styling */
 .brand-logo img {
   max-height: 50px; /* Adjusted height to fit the header */
-  width: 100px;
+  width: auto;
   filter: brightness(0.9) opacity(0.8); /* Softens the logo */
   transition: filter 0.3s ease;
 }
@@ -120,36 +120,60 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* Slightly deeper shadow */
 }
 
-/* Login button */
-.login-button {
+/* Dropdown container */
+.dropdown-container {
+  position: relative; /* Ensure dropdown menu is positioned relative to the button */
+  display: inline-block;
+}
+
+/* Dropdown button */
+.dropdown-button {
   padding: 7px 14px; /* Adjust padding */
+  border: none; /* Remove border */
+  background: transparent; /* Make button background transparent */
+  color: inherit; /* Inherit color from the parent element */
+  cursor: pointer; /* Pointer cursor on hover */
+  font-size: 20px; /* Font size */
+  border-radius: 50%; /* Circle shape */
+  width: 50px; /* Width of the button */
+  height: 50px; /* Make button square */
+  text-align: center; /* Center the text/icon */
+}
+
+/* Dropdown menu */
+.dropdown-menu {
+  position: absolute; /* Position dropdown relative to the container */
+  top: 45px; /* Adjust as per the header height */
+  right: 0; /* Align to the right */
+  background-color: white; /* Background color */
+  border-radius: 10px; /* Soft edges */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Light shadow */
+  padding: 10px 0;
+  min-width: 150px; /* Minimum width */
+  z-index: 1001; /* Ensure dropdown appears above other elements */
+}
+
+/* Dropdown menu items */
+.dropdown-item {
+  padding: 10px 20px;
+  background: transparent;
+  color: #333; /* Text color */
   border: none;
-  background-color: #28a745;
-  color: white;
-  border-radius: 20px; /* Softer edges */
+  text-align: left; /* Align text to the left */
+  width: 100%;
   cursor: pointer;
   font-size: 16px;
-  text-align: center;
-  flex-shrink: 0; /* Prevent shrinking */
-  width: 150px;
-  margin-right: 20px; /* Space between button and right edge */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Subtle shadow */
-  transition: background 0.3s ease, transform 0.2s ease; /* Smooth transitions */
-  background: rgba(255, 255, 255, 0.2); /* Soft background */
+  transition: background 0.3s ease;
 }
 
-.login-button:hover {
-  background-color: #218838; /* Darker shade on hover */
-  transform: translateY(-2px); /* Slight upward hover effect */
+/* Hover state for dropdown items */
+.dropdown-item:hover {
+  background-color: #f0f0f0; /* Light gray on hover */
 }
 
-/* SweetAlert modal styling */
-.responsive-swal {
-  width: 100% !important; /* Full width of the viewport */
-  max-width: 500px;
-  box-sizing: border-box;
-  padding: 20px;
-  overflow-x: hidden;
+/* Optional: style for active item */
+.dropdown-item:active {
+  background-color: #e0e0e0;
 }
 
 /* Responsive adjustments for smaller devices */
@@ -168,9 +192,22 @@
     padding: 0 20px; /* Ensure 20px padding on left and right */
   }
 
+  /* Adjust burger and brand logo to be in the same row */
+  .burger-logo-wrapper {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: auto; /* Adjust width to fit both in one row */
+  }
+
+  .burger-container {
+    margin-right: 10px; /* Small spacing between burger and logo */
+  }
+
   .brand-logo-container {
-    margin-bottom: 10px;
-    width: 100%;
+    max-width: 150px; /* Adjust width to fit the logo better */
+    display: flex;
+    align-items: center;
     justify-content: center;
   }
 
@@ -181,24 +218,19 @@
   }
 
   .login-button {
-    width: 50%;
-    font-size: 14px;
-    text-align: center;
-    margin-top: 10px;
-    align-self: center;
-    transition: background-color 0.2s ease, transform 0.2s ease;
-  }
-
-  .responsive-swal {
-    width: 90% !important;
-    max-width: 100%;
-    padding: 15px;
+    position: absolute; /* Position the button absolutely */
+    top: 10px; /* Offset from the top */
+    right: 0px; /* Offset from the right */
+    width: auto; /* Remove the fixed width */
+    font-size: 20px; /* Font size */
+    text-align: right; /* Align the text to the right */
+    margin-top: 0; /* Remove margin-top */
   }
 
   .search-button {
     font-size: 0; /* Hide the text "Search" */
     padding: 0;
-    width: 20%; /* Remove padding for better alignment */
+    width: 50%; /* Adjust width */
   }
 
   /* Add magnifying glass icon inside the button */
@@ -210,5 +242,24 @@
     color: white;
     display: inline-block;
     line-height: 40px; /* Ensure icon is vertically aligned */
+  }
+  
+  .dropdown-container {
+    position: absolute; /* Absolute positioning for dropdown container */
+    top: 10px; /* Adjust based on your header height and desired top offset */
+    right: 10px; /* Adjust based on your desired right offset */
+  }
+
+  .dropdown-button {
+    padding: 7px 14px; /* Adjust padding */
+    border: none; /* Remove border */
+    background: transparent; /* Make button background transparent */
+    color: inherit; /* Inherit color from the parent element */
+    cursor: pointer; /* Pointer cursor on hover */
+    font-size: 20px; /* Font size */
+    border-radius: 50%; /* Circle shape */
+    width: 50px; /* Width of the button */
+    height: 50px; /* Make button square */
+    text-align: center; /* Center the text/icon */
   }
 }
