@@ -3,12 +3,14 @@
     display: flex;
     justify-content: center; /* Center horizontally */
     width: 100%;             /* Full width */
+    
 }
 
 /* Video player styling */
 .video-player {
     width: 50%;               /* Default width for larger screens */
     margin-top: 10px;        /* Space below the TextSection */
+    background-color: black;
 }
 
 /* Responsive styling for mobile screens */

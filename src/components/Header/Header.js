@@ -33,7 +33,11 @@ const Header = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const openModal = () => setIsModalOpen(true);
+  // Add console log for debugging
+  const openModal = () => {
+    console.log("Opening modal"); // Debugging log
+    setIsModalOpen(true);
+  };
   const closeModal = () => setIsModalOpen(false);
 
   const toggleDropdown = () => {
@@ -52,9 +56,7 @@ const Header = () => {
               </div>
             </div>
           </div>
-          <div
-            className={`search-container ${isExpanded ? 'expanded' : ''}`}
-          >
+          <div className={`search-container ${isExpanded ? 'expanded' : ''}`}>
             <input
               type="text"
               className="search-input"
