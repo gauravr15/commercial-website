@@ -8,6 +8,7 @@ const Header = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false); // State to manage modal visibility
   const [isDropdownOpen, setIsDropdownOpen] = useState(false); // State to manage dropdown visibility
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // State to manage login status
   const dropdownRef = useRef(null); // Ref for the dropdown
 
   const handleSearchClick = () => {
@@ -38,10 +39,22 @@ const Header = () => {
     console.log("Opening modal"); // Debugging log
     setIsModalOpen(true);
   };
+
   const closeModal = () => setIsModalOpen(false);
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  const handleSignInSuccess = () => {
+    setIsLoggedIn(true); // Update login status
+    setIsDropdownOpen(false); // Close the dropdown
+  };
+
+  const handleSignOut = () => {
+    setIsLoggedIn(false); // Reset login status
+    console.log("User signed out");
+    // Additional sign-out logic can go here
   };
 
   return (
@@ -83,18 +96,26 @@ const Header = () => {
             {/* Dropdown menu */}
             {isDropdownOpen && (
               <div className="dropdown-menu">
-                <button
-                  className="dropdown-item"
-                  onClick={openModal} // Open the modal on click
-                >
-                  Login
-                </button>
-                <button className="dropdown-item">
-                  Profile
-                </button>
-                <button className="dropdown-item">
-                  Settings
-                </button>
+                {!isLoggedIn ? (
+                  <button
+                    className="dropdown-item"
+                    onClick={openModal} // Open the modal on click
+                  >
+                    Login
+                  </button>
+                ) : (
+                  <>
+                    <button className="dropdown-item">
+                      Profile
+                    </button>
+                    <button className="dropdown-item">
+                      Settings
+                    </button>
+                    <button className="dropdown-item" onClick={handleSignOut}>
+                      Sign Out
+                    </button>
+                  </>
+                )}
               </div>
             )}
           </div>
@@ -102,7 +123,7 @@ const Header = () => {
       </header>
 
       {/* Render the modal */}
-      {isModalOpen && <SignInModal onClose={closeModal} />}
+      {isModalOpen && <SignInModal onClose={closeModal} onSignInSuccess={handleSignInSuccess} />}
     </>
   );
 };

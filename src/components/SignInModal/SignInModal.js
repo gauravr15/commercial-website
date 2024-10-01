@@ -3,7 +3,7 @@ import './SignInModal.css';
 import { makeRequest } from '../../utility/RestCallUtility'; // Adjust the import path
 import GenericModal from '../MessageModal/MessageModal'; // Adjust the import path for the GenericModal
 
-const SignInModal = ({ onClose }) => {
+const SignInModal = ({ onClose, onSignInSuccess }) => {
   const [isSignUp, setIsSignUp] = useState(false); // Toggle for SignIn/SignUp
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -23,55 +23,54 @@ const SignInModal = ({ onClose }) => {
     setIsSignUp(!isSignUp); // Toggle between SignIn and SignUp form
   };
 
+  const REGISTRATION_BASE_URL = process.env.REACT_APP_BASE_REGISTRATION_URL; // Get BASE_URL for registration from environment variable
+  const SIGNIN_BASE_URL = process.env.REACT_APP_BASE_PROFILE_URL; // Get BASE_URL for sign-in from environment variable
+
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent default form submission behavior
     setError(''); // Reset any previous errors
 
     const endpoint = isSignUp ? '/v1/signUp' : '/v1/signIn'; // Set API endpoint based on form type
+    const baseURL = isSignUp ? REGISTRATION_BASE_URL : SIGNIN_BASE_URL; // Choose baseURL based on the form
 
     const payload = {
       email,
-      mobile, // Add mobile to the payload for both sign-up and sign-in
+      mobile, // Mobile is included for both sign-up and sign-in
       customerType: 'CUSTOMER', // Hardcoded customerType as 'CUSTOMER'
+      auth: {
+        password, // Password is now inside the auth object
+      },
       ...(isSignUp && { 
         firstName, 
         lastName, 
-        // Other fields for sign-up can go here if needed
-      }),
-      auth: {
-        password, // Password is now inside the auth object
-        isFirstTimeLogin: true, // Assuming default values for other auth fields
-        isTempPassword: true,
-        passwordChangeCount: 0,
-        isActive: true,
-        isDeleted: false,
-        isTempLock: false,
-        isPermLock: false,
-        tempLockCount: 0,
-        permLockCount: 0,
-        tempLockDate: null,
-        permLockDate: null
-      }
+      })
     };
 
     try {
-      const data = await makeRequest(endpoint, payload); // Use makeRequest to send the payload
+      // Pass baseURL to makeRequest
+      const data = await makeRequest(baseURL, endpoint, payload); // Use makeRequest to send the payload
 
       // Log the full response data for debugging
       console.log('API Response:', data.message);
 
       // Check if the response structure matches expected format
       if (data && data.statusCode !== undefined) {
-        // Print each property to the console for debugging
         console.log('Status Code:', data.statusCode);
         console.log('Status:', data.status);
         console.log('Message:', data.message);
+
+        if (data.statusCode === 2000) {
+          // Sign-in success with status code 2000
+          onSignInSuccess(); // Notify parent component of successful sign-in
+          handleClose(); // Close the modal
+          return; // Exit early
+        } 
 
         if (data.message === null) {
           // Handle failure response
           setModalMessage(data.status); // Display failure message from API
         } else {
-          // Handle success response here (not specified in your response)
+          // Handle success response
           setModalMessage(data.message); // Update this based on your success message
         }
       } else {
