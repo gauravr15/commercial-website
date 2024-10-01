@@ -2,10 +2,10 @@
 import axios from 'axios';
 import { encrypt, decrypt } from './EncryptionDecryption';
 
-const baseURL = process.env.REACT_APP_BASE_URL;
+// Remove baseURL from here
 const isEncryptionEnabled = process.env.REACT_APP_IS_ENCRYPTION_ENABLED === 'true';
 
-export const makeRequest = async (endpoint, data) => {
+export const makeRequest = async (baseURL, endpoint, data) => { // Accept baseURL as a parameter
   try {
     // Prepare request body with encryption if enabled
     const requestTimestamp = Date.now();
@@ -16,7 +16,7 @@ export const makeRequest = async (endpoint, data) => {
       requestBody = { request: encryptedData };
     }
 
-    // Make the API request
+    // Make the API request using the passed baseURL
     const response = await axios.post(`${baseURL}${endpoint}`, requestBody, {
       headers: {
         'Content-Type': 'application/json',
