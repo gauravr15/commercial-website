@@ -1,11 +1,11 @@
 // src/utility/RestCallUtility.js
 import axios from 'axios';
 import { encrypt, decrypt } from './EncryptionDecryption';
+import Cookies from 'js-cookie';
 
-// Remove baseURL from here
 const isEncryptionEnabled = process.env.REACT_APP_IS_ENCRYPTION_ENABLED === 'true';
 
-export const makeRequest = async (baseURL, endpoint, data) => { // Accept baseURL as a parameter
+export const makeRequest = async (baseURL, endpoint, data) => {
   try {
     // Prepare request body with encryption if enabled
     const requestTimestamp = Date.now();
@@ -16,12 +16,16 @@ export const makeRequest = async (baseURL, endpoint, data) => { // Accept baseUR
       requestBody = { request: encryptedData };
     }
 
+    // Retrieve the token from localStorage
+    const accessToken =  Cookies.get('authorizationHeader');
+
     // Make the API request using the passed baseURL
     const response = await axios.post(`${baseURL}${endpoint}`, requestBody, {
       headers: {
         'Content-Type': 'application/json',
         'requestTimestamp': requestTimestamp,
         'appLang': 'en',
+        ...(accessToken ? { 'Authorization': `Bearer ${accessToken}` } : {}), // Add the Bearer token if it exists
       },
     });
 
@@ -59,7 +63,7 @@ export const makeRequest = async (baseURL, endpoint, data) => { // Accept baseUR
       console.log('Parsed DTO message:', parsedResponse.message);
 
       // Check if the response indicates a failure (e.g., statusCode is not 200)
-      if (parsedResponse.statusCode !== 200) {
+      if (parsedResponse.statusCode < 2000) {
         console.warn('API request failed:', parsedResponse);
         return parsedResponse; // Return the valid but failed response for further handling
       }

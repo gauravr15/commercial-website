@@ -1,12 +1,18 @@
-import React, { useEffect } from 'react';
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';  // Import Router components
 import Home from './pages/Home/Home';
-import { encrypt, decrypt } from './utility/EncryptionDecryption';  // Import the encrypt and decrypt functions
+import Profile from './pages/Profile/Profile'; // Import the Profile page
 import './styles/global.css';
 
 function App() {
   return (
     <div className="App">
-      <Home />
+      <Router>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/profile" element={<Profile />} /> {/* Profile Route */}
+        </Routes>
+      </Router>
     </div>
   );
 }

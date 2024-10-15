@@ -1,3 +1,13 @@
 body {
     overflow-x: hidden; /* Prevent horizontal overflow */
   }
+
+  /* src/pages/Profile/Profile.css */
+
+.profile-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 20vh; /* Adjust based on your layout */
+  flex-direction: column; /* Stack content vertically */
+}

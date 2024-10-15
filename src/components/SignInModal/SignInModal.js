@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import './SignInModal.css';
 import { makeRequest } from '../../utility/RestCallUtility'; // Adjust the import path
 import GenericModal from '../MessageModal/MessageModal'; // Adjust the import path for the GenericModal
+import { jwtDecode } from 'jwt-decode'; // Named import
+import Cookies from 'js-cookie'; // Import js-cookie
 
 const SignInModal = ({ onClose, onSignInSuccess }) => {
   const [isSignUp, setIsSignUp] = useState(false); // Toggle for SignIn/SignUp
@@ -25,6 +27,9 @@ const SignInModal = ({ onClose, onSignInSuccess }) => {
 
   const REGISTRATION_BASE_URL = process.env.REACT_APP_BASE_REGISTRATION_URL; // Get BASE_URL for registration from environment variable
   const SIGNIN_BASE_URL = process.env.REACT_APP_BASE_PROFILE_URL; // Get BASE_URL for sign-in from environment variable
+
+  Cookies.remove('customerId'); 
+  Cookies.remove('authorizationHeader');
 
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent default form submission behavior
@@ -58,9 +63,16 @@ const SignInModal = ({ onClose, onSignInSuccess }) => {
         console.log('Status Code:', data.statusCode);
         console.log('Status:', data.status);
         console.log('Message:', data.message);
+        console.log('Data:', data.data);
 
         if (data.statusCode === 2000) {
-          // Sign-in success with status code 2000
+          // Decode the JWT token to get customer ID
+          const decodedToken = jwtDecode(data.data.accessToken);
+          console.log("decoded token", decodedToken);
+          const customerId = decodedToken.sub; // Get 'sub' value
+          // Store customerId in cookies with an expiration of 7 days
+          Cookies.set('customerId', customerId, { expires: 1 }); // Store in cookies
+          Cookies.set('authorizationHeader', data.data.accessToken, { expires: 1 }); // Store token in cookies
           onSignInSuccess(); // Notify parent component of successful sign-in
           handleClose(); // Close the modal
           return; // Exit early
