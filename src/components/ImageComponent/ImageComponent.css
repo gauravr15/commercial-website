@@ -1,0 +1,15 @@
+.profile-image-container {
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    margin-top: 20px;
+  }
+  
+  .profile-image {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%; /* Make the image circular */
+    object-fit: cover; /* Ensure the image covers the circle */
+    border: 3px solid #ccc; /* Optional: Add a border around the image */
+  }
+  

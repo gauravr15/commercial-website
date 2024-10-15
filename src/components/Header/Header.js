@@ -1,31 +1,28 @@
 import React, { useState, useEffect, useRef } from 'react';
-import SignInModal from '../SignInModal/SignInModal'; // Import the SignInModal component
-import Burger from '../Burger/Burger'; // Import the Burger component
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
+import SignInModal from '../SignInModal/SignInModal';
+import Burger from '../Burger/Burger';
 import './Header.css';
-import logo from '../../assets/logo.png'; // Import the logo image
+import logo from '../../assets/logo.png';
 
 const Header = () => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false); // State to manage modal visibility
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // State to manage dropdown visibility
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // State to manage login status
-  const dropdownRef = useRef(null); // Ref for the dropdown
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const dropdownRef = useRef(null);
+  const navigate = useNavigate(); // Initialize useNavigate
 
-  const handleSearchClick = () => {
-    setIsExpanded(true);
-  };
+  const handleSearchClick = () => setIsExpanded(true);
 
   const handleButtonClick = (event) => {
-    event.stopPropagation(); // Prevents click from bubbling up to the document
+    event.stopPropagation();
     setIsExpanded(true);
   };
 
   const handleClickOutside = (event) => {
-    if (
-      dropdownRef.current &&
-      !dropdownRef.current.contains(event.target)
-    ) {
-      setIsDropdownOpen(false); // Close dropdown if click is outside
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      setIsDropdownOpen(false);
     }
   };
 
@@ -34,12 +31,7 @@ const Header = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Add console log for debugging
-  const openModal = () => {
-    console.log("Opening modal"); // Debugging log
-    setIsModalOpen(true);
-  };
-
+  const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
   const toggleDropdown = () => {
@@ -47,14 +39,16 @@ const Header = () => {
   };
 
   const handleSignInSuccess = () => {
-    setIsLoggedIn(true); // Update login status
-    setIsDropdownOpen(false); // Close the dropdown
+    setIsLoggedIn(true);
+    setIsDropdownOpen(false);
   };
 
   const handleSignOut = () => {
-    setIsLoggedIn(false); // Reset login status
-    console.log("User signed out");
-    // Additional sign-out logic can go here
+    setIsLoggedIn(false);
+  };
+
+  const goToProfile = () => {
+    navigate('/profile'); // Navigate to the profile page
   };
 
   return (
@@ -62,10 +56,10 @@ const Header = () => {
       <header className="header">
         <div className="header-content">
           <div className="burger-logo-wrapper">
-            <Burger /> {/* Burger component */}
+            <Burger />
             <div className="brand-logo-container">
               <div className="brand-logo">
-                <img src={logo} alt="Brand Logo" /> {/* Use the imported logo */}
+                <img src={logo} alt="Brand Logo" />
               </div>
             </div>
           </div>
@@ -76,36 +70,25 @@ const Header = () => {
               placeholder="Search..."
               onClick={handleSearchClick}
             />
-            <button
-              className="search-button"
-              onClick={handleButtonClick}
-            >
+            <button className="search-button" onClick={handleButtonClick}>
               Search
             </button>
           </div>
 
-          {/* Dropdown trigger button */}
           <div className="dropdown-container" ref={dropdownRef}>
-            <button
-              className="dropdown-button"
-              onClick={toggleDropdown}
-            >
+            <button className="dropdown-button" onClick={toggleDropdown}>
               &#128100;
             </button>
 
-            {/* Dropdown menu */}
             {isDropdownOpen && (
               <div className="dropdown-menu">
                 {!isLoggedIn ? (
-                  <button
-                    className="dropdown-item"
-                    onClick={openModal} // Open the modal on click
-                  >
+                  <button className="dropdown-item" onClick={openModal}>
                     Login
                   </button>
                 ) : (
                   <>
-                    <button className="dropdown-item">
+                    <button className="dropdown-item" onClick={goToProfile}>
                       Profile
                     </button>
                     <button className="dropdown-item">
@@ -122,8 +105,9 @@ const Header = () => {
         </div>
       </header>
 
-      {/* Render the modal */}
-      {isModalOpen && <SignInModal onClose={closeModal} onSignInSuccess={handleSignInSuccess} />}
+      {isModalOpen && (
+        <SignInModal onClose={closeModal} onSignInSuccess={handleSignInSuccess} />
+      )}
     </>
   );
 };
