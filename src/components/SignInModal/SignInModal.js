@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './SignInModal.css';
-import { makeRequest } from '../../utility/RestCallUtility'; // Adjust the import path
+import { makePostRequest } from '../../utility/RestCallUtility'; // Adjust the import path
 import GenericModal from '../MessageModal/MessageModal'; // Adjust the import path for the GenericModal
 import { jwtDecode } from 'jwt-decode'; // Named import
 import Cookies from 'js-cookie'; // Import js-cookie
@@ -53,7 +53,7 @@ const SignInModal = ({ onClose, onSignInSuccess }) => {
 
     try {
       // Pass baseURL to makeRequest
-      const data = await makeRequest(baseURL, endpoint, payload); // Use makeRequest to send the payload
+      const data = await makePostRequest(baseURL, endpoint, payload); // Use makeRequest to send the payload
 
       // Log the full response data for debugging
       console.log('API Response:', data.message);

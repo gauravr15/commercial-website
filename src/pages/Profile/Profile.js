@@ -5,7 +5,7 @@ import ProfileImage from '../../components/ImageComponent/ImageComponent';
 import './Profile.css';
 import TextSection from '../../components/TextSection/TextSection';
 import Cookies from 'js-cookie';
-import { makeRequest } from '../../utility/RestCallUtility'; // Import the makeRequest utility function
+import { makePostRequest } from '../../utility/RestCallUtility'; // Import the makeRequest utility function
 
 const Profile = () => {
   const [profileData, setProfileData] = useState(null); // State to hold profile data
@@ -36,7 +36,7 @@ const Profile = () => {
 
       try {
         // Call the makeRequest function from RestCallUtility.js
-        const response = await makeRequest(baseURL, endpoint, payload, {
+        const response = await makePostRequest(baseURL, endpoint, payload, {
           headers: {
             Authorization: `Bearer YOUR_AUTH_TOKEN`, // Replace with actual token
             appLang: 'en',

@@ -5,7 +5,7 @@ import Cookies from 'js-cookie';
 
 const isEncryptionEnabled = process.env.REACT_APP_IS_ENCRYPTION_ENABLED === 'true';
 
-export const makeRequest = async (baseURL, endpoint, data) => {
+export const makePostRequest = async (baseURL, endpoint, data) => {
   try {
     // Prepare request body with encryption if enabled
     const requestTimestamp = Date.now();
@@ -74,6 +74,39 @@ export const makeRequest = async (baseURL, endpoint, data) => {
       throw new Error('Unexpected response format');
     }
 
+  } catch (error) {
+    console.error('Error making API request:', error);
+    throw error; // Re-throw error for the caller to handle
+  }
+};
+
+// New method to handle GET requests
+export const makeGetRequest = async (baseURL, endpoint) => {
+  try {
+    // Retrieve the token from Cookies (if available)
+    const accessToken = Cookies.get('authorizationHeader');
+
+    // Make a GET request using axios
+    const response = await axios.get(`${baseURL}${endpoint}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'appLang': 'en',
+        ...(accessToken ? { 'Authorization': `Bearer ${accessToken}` } : {}),
+      },
+    });
+
+    // Log headers for debugging
+    console.log('All response headers:', response.headers);
+
+    let responseData = response.data;
+
+    // Validate and return the response
+    if (isValidResponse(responseData)) {
+      return parseToDTO(responseData); // Return parsed response
+    } else {
+      console.error('Unexpected response data format:', responseData);
+      throw new Error('Unexpected response format');
+    }
   } catch (error) {
     console.error('Error making API request:', error);
     throw error; // Re-throw error for the caller to handle
