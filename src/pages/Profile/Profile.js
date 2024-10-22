@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
 import ProfileImage from '../../components/ImageComponent/ImageComponent';
@@ -6,25 +6,34 @@ import './Profile.css';
 import TextSection from '../../components/TextSection/TextSection';
 import Cookies from 'js-cookie';
 import { makePostRequest } from '../../utility/RestCallUtility'; // Import the makeRequest utility function
+import AuthContext from '../../utility/AuthContext'; // Import AuthContext for authentication state management
+import { useNavigate } from 'react-router-dom'; // For programmatic navigation
 
 const Profile = () => {
+  const { isAuthenticated } = useContext(AuthContext); // Access authentication context
+  const navigate = useNavigate(); // For navigation
   const [profileData, setProfileData] = useState(null); // State to hold profile data
   const [error, setError] = useState(null); // State to hold any error messages
   const [loading, setLoading] = useState(true); // State to manage loading state
 
   // Fetch customer profile data on component mount
   useEffect(() => {
+    if (!isAuthenticated) {
+      // If not authenticated, redirect to home or sign in
+      navigate('/'); 
+      return; // Exit the effect early
+    }
+
     const fetchProfileData = async () => {
-      // Get the customerId from cookies
       const customerId = Cookies.get('customerId');
       if (!customerId) {
         setError('Customer ID not found');
-        console.log('Customer ID not found in cookies'); // Debug log
-        setLoading(false); // Stop loading since customer ID is not available
+        console.log('Customer ID not found in cookies');
+        setLoading(false);
         return;
       }
 
-      console.log('Customer ID from cookie:', customerId); // Log customerId for debugging
+      console.log('Customer ID from cookie:', customerId);
 
       const baseURL = process.env.REACT_APP_BASE_PROFILE_URL; // Replace with the actual base URL
       const endpoint = '/v1/customer/details';
@@ -35,7 +44,6 @@ const Profile = () => {
       };
 
       try {
-        // Call the makeRequest function from RestCallUtility.js
         const response = await makePostRequest(baseURL, endpoint, payload, {
           headers: {
             Authorization: `Bearer YOUR_AUTH_TOKEN`, // Replace with actual token
@@ -44,42 +52,31 @@ const Profile = () => {
           },
         });
 
-        console.log('Profile API Response:', response); // Debug log
+        console.log('Profile API Response:', response);
 
-        // Handle the response data
         if (response.statusCode === 2000) {
-          console.log('Response data:', response.data); // Log the response data
-          setProfileData(response.data); // Assuming the profile data is in the response's data field
+          console.log('Response data:', response.data);
+          setProfileData(response.data);
         } else {
-          console.log('Error in response:', response.message); // Log the error message
-          setError(response.message); // Set error message if response is not successful
+          console.log('Error in response:', response.message);
+          setError(response.message);
         }
       } catch (err) {
         console.error('Error fetching profile data:', err);
         setError('Failed to fetch profile data');
       } finally {
-        setLoading(false); // Stop loading after request completes
-        console.log('Loading state set to false'); // Log loading state
+        setLoading(false);
       }
     };
 
-    // Ensure the request is triggered only once when the component mounts
     fetchProfileData();
-  }, []); // Empty dependency array ensures the request runs only once on component mount
+  }, [isAuthenticated, navigate]); // Add dependencies to the useEffect
 
-  // Log the current state to check when the heading and paragraph are rendered
-  console.log('Loading:', loading);
-  console.log('Profile Data:', profileData);
-  console.log('Error:', error);
-
-  // Determine the heading based on loading state and profile data
   const heading = loading
-    ? `Welcome` // Show only "Welcome" while loading
+    ? `Welcome`
     : profileData && profileData.firstName
-    ? `Welcome ${profileData.firstName}` // Show firstName when available
-    : `Welcome`; // Default to "Welcome" if no profile data
-
-  console.log('Heading:', heading); // Log the heading for debugging
+    ? `Welcome ${profileData.firstName}`
+    : `Welcome`;
 
   const paragraph = profileData
     ? `Your profile data: ${JSON.stringify(profileData)}`
@@ -92,13 +89,11 @@ const Profile = () => {
   return (
     <>
       <Header />
-
       <div className="profile-page">
         <ProfileImage />
         <TextSection heading={heading} paragraph={paragraph} />
-        {error && <p className="error-message">{error}</p>} {/* Display error message if present */}
+        {error && <p className="error-message">{error}</p>}
       </div>
-
       <Footer />
     </>
   );

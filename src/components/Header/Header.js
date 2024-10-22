@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
 import SignInModal from '../SignInModal/SignInModal';
 import Burger from '../Burger/Burger';
+import AuthContext from '../../utility/AuthContext'; // Import AuthContext
 import './Header.css';
 import logo from '../../assets/logo.png';
 
@@ -9,9 +10,9 @@ const Header = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate(); // Initialize useNavigate
+  const { isAuthenticated, signOut } = useContext(AuthContext); // Use AuthContext
 
   const handleSearchClick = () => setIsExpanded(true);
 
@@ -39,12 +40,12 @@ const Header = () => {
   };
 
   const handleSignInSuccess = () => {
-    setIsLoggedIn(true);
     setIsDropdownOpen(false);
   };
 
   const handleSignOut = () => {
-    setIsLoggedIn(false);
+    signOut(); // Call the signOut function from AuthContext
+    setIsDropdownOpen(false); // Close the dropdown after signing out
   };
 
   const goToProfile = () => {
@@ -82,7 +83,7 @@ const Header = () => {
 
             {isDropdownOpen && (
               <div className="dropdown-menu">
-                {!isLoggedIn ? (
+                {!isAuthenticated ? (
                   <button className="dropdown-item" onClick={openModal}>
                     Login
                   </button>
