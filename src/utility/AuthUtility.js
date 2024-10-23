@@ -1,5 +1,5 @@
 import Cookies from 'js-cookie';
-import { jwtDecode } from 'jwt-decode'; // Use jwt-decode to decode and check token expiration
+import { jwtDecode } from 'jwt-decode'; // Correct import for jwt-decode version 3.1.2
 import { makePublicPostRequest } from './RestCallUtility';
 
 // Store tokens in Cookies or LocalStorage

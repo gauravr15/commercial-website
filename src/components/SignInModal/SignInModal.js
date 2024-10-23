@@ -6,6 +6,8 @@ import { setTokens } from '../../utility/AuthUtility'; // Import token handling 
 import Cookies from 'js-cookie';
 import { jwtDecode } from 'jwt-decode'; // Removed curly braces for jwtDecode import
 import { useNavigate, useLocation } from 'react-router-dom'; // Import for redirection
+import { useContext } from 'react';
+import AuthContext from '../../utility/AuthContext'; // Import AuthContext
 
 const SignInModal = ({ onClose, onSignInSuccess }) => {
   const [isSignUp, setIsSignUp] = useState(false); // Toggle for SignIn/SignUp
@@ -20,6 +22,7 @@ const SignInModal = ({ onClose, onSignInSuccess }) => {
 
   const navigate = useNavigate(); // Hook for redirection
   const location = useLocation(); // Hook to access the previous route the user attempted to access
+  const { logIn } = useContext(AuthContext); // Get logIn function from AuthContext
 
   // Reset error and close the modal
   const handleClose = () => {
@@ -64,6 +67,7 @@ const SignInModal = ({ onClose, onSignInSuccess }) => {
         setTokens(accessToken, refreshToken);
 
         // Notify parent component of sign-in success
+        logIn(); // Call logIn from context
         onSignInSuccess();
 
         // Redirect user to the page they tried to access or home
