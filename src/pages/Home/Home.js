@@ -8,7 +8,6 @@ import Footer from '../../components/Footer/Footer';
 const Home = () => {
   const heading = 'Welcome';
   const paragraph = 'This paragraph is passed as a prop to the TextSection component.';
-  const requestBody = { key: 'value' }; // Replace with actual request body
 
   return (
     <>

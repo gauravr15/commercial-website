@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
 import './SignInModal.css';
-import { makePostRequest } from '../../utility/RestCallUtility'; // Adjust the import path
-import GenericModal from '../MessageModal/MessageModal'; // Adjust the import path for the GenericModal
-import { jwtDecode } from 'jwt-decode'; // Named import
-import Cookies from 'js-cookie'; // Import js-cookie
+import { makePublicPostRequest } from '../../utility/RestCallUtility'; // Adjusted import path for makePostRequest
+import GenericModal from '../MessageModal/MessageModal'; // Adjust import path for GenericModal
+import { setTokens } from '../../utility/AuthUtility'; // Import token handling functions
+import Cookies from 'js-cookie';
+import { jwtDecode } from 'jwt-decode'; // Removed curly braces for jwtDecode import
+import { useNavigate, useLocation } from 'react-router-dom'; // Import for redirection
+import { useContext } from 'react';
+import AuthContext from '../../utility/AuthContext'; // Import AuthContext
 
 const SignInModal = ({ onClose, onSignInSuccess }) => {
   const [isSignUp, setIsSignUp] = useState(false); // Toggle for SignIn/SignUp
@@ -16,84 +20,70 @@ const SignInModal = ({ onClose, onSignInSuccess }) => {
   const [showModal, setShowModal] = useState(false); // State for showing the GenericModal
   const [modalMessage, setModalMessage] = useState(''); // Message to display in the GenericModal
 
+  const navigate = useNavigate(); // Hook for redirection
+  const location = useLocation(); // Hook to access the previous route the user attempted to access
+  const { logIn } = useContext(AuthContext); // Get logIn function from AuthContext
+
+  // Reset error and close the modal
   const handleClose = () => {
-    setError(''); // Clear any errors on close
-    onClose(); // Close immediately without delay
+    setError('');
+    onClose(); // Close the modal
   };
 
+  // Toggle between SignIn and SignUp form
   const toggleForm = () => {
-    setIsSignUp(!isSignUp); // Toggle between SignIn and SignUp form
+    setIsSignUp(!isSignUp);
   };
 
-  const REGISTRATION_BASE_URL = process.env.REACT_APP_BASE_REGISTRATION_URL; // Get BASE_URL for registration from environment variable
-  const SIGNIN_BASE_URL = process.env.REACT_APP_BASE_PROFILE_URL; // Get BASE_URL for sign-in from environment variable
-
-  Cookies.remove('customerId'); 
-  Cookies.remove('authorizationHeader');
-
+  // Handle form submission for both SignIn and SignUp
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent default form submission behavior
-    setError(''); // Reset any previous errors
+    e.preventDefault(); // Prevent default form behavior
+    setError(''); // Clear any existing errors
 
-    const endpoint = isSignUp ? '/v1/signUp' : '/v1/signIn'; // Set API endpoint based on form type
-    const baseURL = isSignUp ? REGISTRATION_BASE_URL : SIGNIN_BASE_URL; // Choose baseURL based on the form
+    const endpoint = isSignUp ? '/v1/signUp' : '/v1/signIn'; // Determine API endpoint
+    const baseURL = isSignUp ? process.env.REACT_APP_BASE_REGISTRATION_URL : process.env.REACT_APP_BASE_PROFILE_URL; // Set base URL
 
     const payload = {
       email,
-      mobile, // Mobile is included for both sign-up and sign-in
-      customerType: 'CUSTOMER', // Hardcoded customerType as 'CUSTOMER'
-      auth: {
-        password, // Password is now inside the auth object
-      },
-      ...(isSignUp && { 
-        firstName, 
-        lastName, 
-      })
+      mobile,
+      isTransactionEnabled: true,
+      customerType: 'CUSTOMER',
+      auth: { password },
+      ...(isSignUp && { firstName, lastName }), // Add extra fields for SignUp
     };
 
     try {
-      // Pass baseURL to makeRequest
-      const data = await makePostRequest(baseURL, endpoint, payload); // Use makeRequest to send the payload
+      // Make the API request using the refactored makePostRequest function
+      const data = await makePublicPostRequest(baseURL, endpoint, payload);
 
-      // Log the full response data for debugging
-      console.log('API Response:', data.message);
+      if (data && data.statusCode === 2000) {
+        const { accessToken, refreshToken } = data.data;
 
-      // Check if the response structure matches expected format
-      if (data && data.statusCode !== undefined) {
-        console.log('Status Code:', data.statusCode);
-        console.log('Status:', data.status);
-        console.log('Message:', data.message);
-        console.log('Data:', data.data);
+        const decodedToken = jwtDecode(accessToken); // Decode access token
+        const customerId = decodedToken.sub;
+        Cookies.set('customerId', customerId, { expires: 1 });
 
-        if (data.statusCode === 2000) {
-          // Decode the JWT token to get customer ID
-          const decodedToken = jwtDecode(data.data.accessToken);
-          console.log("decoded token", decodedToken);
-          const customerId = decodedToken.sub; // Get 'sub' value
-          // Store customerId in cookies with an expiration of 7 days
-          Cookies.set('customerId', customerId, { expires: 1 }); // Store in cookies
-          Cookies.set('authorizationHeader', data.data.accessToken, { expires: 1 }); // Store token in cookies
-          onSignInSuccess(); // Notify parent component of successful sign-in
-          handleClose(); // Close the modal
-          return; // Exit early
-        } 
+        // Store tokens
+        setTokens(accessToken, refreshToken);
 
-        if (data.message === null) {
-          // Handle failure response
-          setModalMessage(data.status); // Display failure message from API
-        } else {
-          // Handle success response
-          setModalMessage(data.message); // Update this based on your success message
-        }
+        // Notify parent component of sign-in success
+        logIn(); // Call logIn from context
+        onSignInSuccess();
+
+        // Redirect user to the page they tried to access or home
+        const redirectTo = location.state?.from?.pathname || '/';
+        navigate(redirectTo);
+
+        handleClose();
       } else {
-        setModalMessage('Unexpected response format');
+        setModalMessage(data.message || 'Unexpected error');
       }
 
-      setShowModal(true); // Show the GenericModal
+      setShowModal(true); // Show the GenericModal with the message
     } catch (error) {
-      setError(error.message); // Set error message for display
-      setModalMessage(error.message); // Also set modal message
-      setShowModal(true); // Show the GenericModal on error
+      setError(error.message);
+      setModalMessage(error.message);
+      setShowModal(true);
     }
   };
 
@@ -102,74 +92,26 @@ const SignInModal = ({ onClose, onSignInSuccess }) => {
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <h2>{isSignUp ? 'Sign Up' : 'Sign In'}</h2>
 
-        {error && <p className="error-message">{error}</p>} {/* Display error message */}
+        {error && <p className="error-message">{error}</p>}
 
         <form onSubmit={handleSubmit}>
           {isSignUp && (
             <>
-              <input 
-                type="text" 
-                id="firstName" 
-                className="modal-input" 
-                placeholder="First Name" 
-                value={firstName} 
-                onChange={(e) => setFirstName(e.target.value)} 
-                required 
-              />
-              <input 
-                type="text" 
-                id="lastName" 
-                className="modal-input" 
-                placeholder="Last Name" 
-                value={lastName} 
-                onChange={(e) => setLastName(e.target.value)} 
-                required 
-              />
-              <input 
-                type="tel" 
-                id="mobile" 
-                className="modal-input" 
-                placeholder="Mobile Number" 
-                value={mobile} 
-                onChange={(e) => setMobile(e.target.value)} 
-                required 
-              />
+              <input type="text" id="firstName" className="modal-input" placeholder="First Name" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
+              <input type="text" id="lastName" className="modal-input" placeholder="Last Name" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
+              <input type="tel" id="mobile" className="modal-input" placeholder="Mobile Number" value={mobile} onChange={(e) => setMobile(e.target.value)} required />
             </>
           )}
 
-          <input 
-            type="text" 
-            id="email" 
-            className="modal-input" 
-            placeholder="Email" 
-            value={email} 
-            onChange={(e) => setEmail(e.target.value)} 
-            required 
-          />
-          <input 
-            type="password" 
-            id="password" 
-            className="modal-input" 
-            placeholder="Password" 
-            value={password} 
-            onChange={(e) => setPassword(e.target.value)} 
-            required 
-          />
+          <input type="text" id="email" className="modal-input" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+          <input type="password" id="password" className="modal-input" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
 
           {isSignUp && (
-            <input 
-              type="password" 
-              id="confirmPassword" 
-              className="modal-input" 
-              placeholder="Confirm Password" 
-              required 
-            />
+            <input type="password" id="confirmPassword" className="modal-input" placeholder="Confirm Password" required />
           )}
 
           <div className="modal-buttons">
-            <button type="submit">
-              {isSignUp ? 'Sign Up' : 'Sign In'}
-            </button>
+            <button type="submit">{isSignUp ? 'Sign Up' : 'Sign In'}</button>
             <button type="button" onClick={toggleForm}>
               {isSignUp ? 'Go to Sign In' : 'Go to Sign Up'}
             </button>
@@ -179,13 +121,7 @@ const SignInModal = ({ onClose, onSignInSuccess }) => {
         <button className="modal-close" onClick={handleClose}>&times;</button>
       </div>
 
-      {/* Generic Modal for displaying messages */}
-      {showModal && (
-        <GenericModal 
-          message={modalMessage} 
-          onClose={() => setShowModal(false)} 
-        />
-      )}
+      {showModal && <GenericModal message={modalMessage} onClose={() => setShowModal(false)} />}
     </div>
   );
 };
