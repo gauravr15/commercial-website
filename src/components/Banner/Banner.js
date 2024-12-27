@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { makePublicGetRequest } from '../../utility/RestCallUtility'; // Import the public API request function
 import './Banner.css';
+import NoBanner from '../../assets/NoBanner.png'; // Import the fallback banner image
 
 const Banner = () => {
   const [banners, setBanners] = useState([]); // Store fetched banners
@@ -114,7 +115,10 @@ const Banner = () => {
           </div>
         </>
       ) : (
-        <p>Loading banners...</p>
+        // Display fallback banner image when no banners are available
+        <div className="fallback-banner">
+          <img src={NoBanner} alt="Fallback Banner" className="fallback-banner-img" />
+        </div>
       )}
     </div>
   );

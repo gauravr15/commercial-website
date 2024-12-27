@@ -8,6 +8,7 @@ import Cookies from 'js-cookie';
 import { makePostRequest } from '../../utility/RestCallUtility'; // Import the makeRequest utility function
 import AuthContext from '../../utility/AuthContext'; // Import AuthContext for authentication state management
 import { useNavigate } from 'react-router-dom'; // For programmatic navigation
+import UploadModal from '../../components/UploadModal/UploadModal'; // Import the UploadModal component
 
 const Profile = () => {
   const { isAuthenticated } = useContext(AuthContext); // Access authentication context
@@ -15,6 +16,7 @@ const Profile = () => {
   const [profileData, setProfileData] = useState(null); // State to hold profile data
   const [error, setError] = useState(null); // State to hold any error messages
   const [loading, setLoading] = useState(true); // State to manage loading state
+  const [isModalOpen, setIsModalOpen] = useState(false); // State to manage modal visibility
 
   // Fetch customer profile data on component mount
   useEffect(() => {
@@ -86,11 +88,28 @@ const Profile = () => {
     ? 'Failed to load profile information.'
     : '';
 
+  // Function to open the modal
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  // Function to close the modal
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
   return (
     <>
       <Header />
       <div className="profile-page">
         <ProfileImage />
+        
+        {/* Button to open the upload modal */}
+        <button onClick={openModal} className="upload-button">Change Profile Photo</button>
+        
+        {/* Conditionally render the UploadModal */}
+        {isModalOpen && <UploadModal onClose={closeModal} />}
+
         <TextSection heading={heading} paragraph={paragraph} />
         {error && <p className="error-message">{error}</p>}
       </div>

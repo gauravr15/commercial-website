@@ -1,10 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import './Burger.css';
 
 const Burger = () => {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef(null);
   const burgerRef = useRef(null);
+  const navigate = useNavigate(); // Initialize useNavigate
+  const location = useLocation();
 
   const toggleMenu = (e) => {
     e.stopPropagation();
@@ -26,6 +29,20 @@ const Burger = () => {
     };
   }, []);
 
+  const handleHomeClick = () => {
+    if (location.pathname !== "/") { // Check if not already on home page
+      navigate("/"); // Navigate to home page
+    }
+    setIsOpen(false); // Close the menu after navigation
+  };
+
+  const handleVideosClick = () => {
+    if (location.pathname !== "/videos") { // Check if not already on videos page
+      navigate("/videos"); // Navigate to video page
+    }
+    setIsOpen(false); // Close the menu after navigation
+  };
+
   return (
     <div className="burger-wrapper">
       {/* Burger Icon */}
@@ -38,7 +55,8 @@ const Burger = () => {
       {/* Slide-in menu */}
       <div className={`side-menu ${isOpen ? "open" : ""}`} ref={menuRef}>
         <ul>
-          <li>Home</li>
+          <li onClick={handleHomeClick}>Home</li> {/* Add click handler */}
+          <li onClick={handleVideosClick}>Videos</li> {/* New Videos option */}
           <li>About</li>
           <li>Services</li>
           <li>Contact</li>

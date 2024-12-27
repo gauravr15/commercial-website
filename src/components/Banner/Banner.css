@@ -15,6 +15,21 @@
     overflow: hidden;
 }
 
+.fallback-banner {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 300px; /* Adjust height as needed */
+  }
+  
+  .fallback-banner-img {
+    max-width: 100%;
+    height: auto;
+    object-fit: cover;
+  }
+  
+
 @media (max-width: 768px) {
     .banner-container {
         margin-top: 0; /* On mobile, remove the margin-top since the header is no longer fixed */

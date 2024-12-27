@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Home from './pages/Home/Home';
 import Profile from './pages/Profile/Profile';
+import VideoPage from './pages/VideoPage/VideoPage'; // Import VideoPage
 import SignInModal from './components/SignInModal/SignInModal';
 import AuthContext from './utility/AuthContext';
 import './styles/global.css';
@@ -39,7 +40,7 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<Home />} />
-
+          <Route path="/videos" element={<VideoPage />} /> {/* Add route for VideoPage */}
           {/* Protected route for profile */}
           <Route 
             path="/profile" 

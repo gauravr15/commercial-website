@@ -1,0 +1,20 @@
+
+  
+  .video-thumbnails {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  
+  .video-thumbnails > div {
+    width: 200px; /* Set width for each thumbnail */
+    height: 120px; /* Set height for each thumbnail */
+    margin: 10px;
+    background-color: #eaeaea; /* Placeholder background color */
+    border-radius: 5px; /* Rounded corners */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  

@@ -1,12 +1,21 @@
 import axios from 'axios';
 import { encrypt, decrypt } from './EncryptionDecryption';
 import { getAccessToken, isTokenExpired, refreshAccessToken } from './AuthUtility';
-import Cookies from 'js-cookie';
 
 const isEncryptionEnabled = process.env.REACT_APP_IS_ENCRYPTION_ENABLED === 'true';
+const userType = process.env.REACT_APP_APPLICATION_USER_TYPE;
 
 // Axios instance to handle requests with authentication
 const axiosInstance = axios.create();
+
+// Function to get device information
+const getDeviceInfo = () => {
+  return {
+    deviceId: navigator.userAgent, // Using user agent as a device ID
+    deviceType: /Mobi|Android/i.test(navigator.userAgent) ? 'Mobile' : 'Desktop',
+    deviceName: navigator.platform,
+  };
+};
 
 // Axios interceptor to check for token expiration and refresh it
 axiosInstance.interceptors.request.use(
@@ -18,8 +27,15 @@ axiosInstance.interceptors.request.use(
       accessToken = await refreshAccessToken(); // Attempt to refresh the token
     }
 
-    // Attach the new/updated access token to the headers
+    // Retrieve device information
+    const { deviceId, deviceType, deviceName } = getDeviceInfo(); // Fetching device info
+
+    // Attach the new/updated access token and device information to the headers
     config.headers.Authorization = `Bearer ${accessToken}`;
+    config.headers['deviceID'] = deviceId; // Add device ID to headers
+    config.headers['deviceType'] = deviceType; // Add device type to headers
+    config.headers['deviceName'] = deviceName; // Add device name to headers
+
     return config;
   },
   (error) => {
@@ -43,6 +59,10 @@ export const makePostRequest = async (baseURL, endpoint, data) => {
         'Content-Type': 'application/json',
         'requestTimestamp': requestTimestamp,
         'appLang': 'en',
+        'deviceID': getDeviceInfo().deviceId, // Add device ID to headers
+        'deviceType': getDeviceInfo().deviceType, // Add device type to headers
+        'deviceName': getDeviceInfo().deviceName, // Add device name to headers
+        'userType' : userType,
       },
     });
 
@@ -70,6 +90,10 @@ export const makeGetRequest = async (baseURL, endpoint) => {
       headers: {
         'Content-Type': 'application/json',
         'appLang': 'en',
+        'deviceID': getDeviceInfo().deviceId, // Add device ID to headers
+        'deviceType': getDeviceInfo().deviceType, // Add device type to headers
+        'deviceName': getDeviceInfo().deviceName, // Add device name to headers
+        'userType' : userType,
       },
     });
 
@@ -87,6 +111,10 @@ export const makePublicGetRequest = async (baseURL, endpoint) => {
       headers: {
         'Content-Type': 'application/json',
         'appLang': 'en',
+        'deviceID': getDeviceInfo().deviceId, // Add device ID to headers
+        'deviceType': getDeviceInfo().deviceType, // Add device type to headers
+        'deviceName': getDeviceInfo().deviceName, // Add device name to headers
+        'userType' : userType,
       },
     });
 
@@ -113,6 +141,10 @@ export const makePublicPostRequest = async (baseURL, endpoint, data) => {
         'Content-Type': 'application/json',
         'requestTimestamp': requestTimestamp,
         'appLang': 'en',
+        'deviceID': getDeviceInfo().deviceId, // Add device ID to headers
+        'deviceType': getDeviceInfo().deviceType, // Add device type to headers
+        'deviceName': getDeviceInfo().deviceName, // Add device name to headers
+        'userType' : userType,
       },
     });
 

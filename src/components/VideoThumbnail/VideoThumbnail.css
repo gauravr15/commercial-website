@@ -1,0 +1,26 @@
+.video-thumbnail {
+    cursor: pointer;
+    width: 200px; /* Adjust size as needed */
+    margin: 10px;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    overflow: hidden;
+    transition: transform 0.2s;
+  }
+  
+  .video-thumbnail:hover {
+    transform: scale(1.05);
+  }
+  
+  .thumbnail-image {
+    width: 100%;
+    height: auto; /* Maintain aspect ratio */
+  }
+  
+  .thumbnail-title {
+    padding: 5px;
+    font-weight: bold;
+    color: #333;
+  }
+  
