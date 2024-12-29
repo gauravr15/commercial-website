@@ -9,6 +9,7 @@ import { makePostRequest } from '../../utility/RestCallUtility'; // Import the m
 import AuthContext from '../../utility/AuthContext'; // Import AuthContext for authentication state management
 import { useNavigate } from 'react-router-dom'; // For programmatic navigation
 import UploadModal from '../../components/UploadModal/UploadModal'; // Import the UploadModal component
+import DynamicForm from '../../components/DynamicForm/DynamicForm';
 
 const Profile = () => {
   const { isAuthenticated } = useContext(AuthContext); // Access authentication context
@@ -112,6 +113,7 @@ const Profile = () => {
 
         <TextSection heading={heading} paragraph={paragraph} />
         {error && <p className="error-message">{error}</p>}
+        <DynamicForm module="profile" submodule="details" />
       </div>
       <Footer />
     </>
