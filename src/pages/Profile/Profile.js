@@ -3,7 +3,6 @@ import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
 import ProfileImage from '../../components/ImageComponent/ImageComponent';
 import './Profile.css';
-import TextSection from '../../components/TextSection/TextSection';
 import Cookies from 'js-cookie';
 import { makePostRequest } from '../../utility/RestCallUtility'; 
 import AuthContext from '../../utility/AuthContext'; 
@@ -16,7 +15,6 @@ const Profile = () => {
   const navigate = useNavigate();
   const [profileData, setProfileData] = useState(null);
   const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const hasFetchedProfile = useRef(false); 
 
@@ -51,7 +49,6 @@ const Profile = () => {
       if (!customerId) {
         console.log('No customer ID found in cookies');
         setError('Customer ID not found');
-        setLoading(false);
         return;
       }
 
@@ -85,9 +82,7 @@ const Profile = () => {
       } catch (err) {
         console.error('Error during API call:', err);
         setError('Failed to fetch profile data');
-      } finally {
-        setLoading(false);
-      }
+      } 
     };
 
     fetchProfileData();
@@ -103,20 +98,6 @@ const Profile = () => {
     setIsModalOpen(false);
   };
 
-  const heading = loading
-    ? `Welcome`
-    : profileData && profileData.firstName
-    ? `Welcome ${profileData.firstName}`
-    : `Welcome`;
-
-  const paragraph = profileData
-    ? `Your profile data: ${JSON.stringify(profileData)}`
-    : loading
-    ? 'Loading your profile information...'
-    : error
-    ? 'Failed to load profile information.'
-    : '';
-
   return (
     <>
       <Header />
@@ -129,9 +110,8 @@ const Profile = () => {
 
         {isModalOpen && <UploadModal onClose={closeModal} />}
 
-        <TextSection heading={heading} paragraph={paragraph} />
         {error && <p className="error-message">{error}</p>}
-        <DynamicForm module="profile" submodule="details" />
+        <DynamicForm module="profile" submodule="details" profileData={profileData} />
       </div>
       <Footer />
     </>

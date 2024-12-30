@@ -15,15 +15,15 @@ const parseField = (field) => ({
   isEditable: field.userEditable, // If the field is editable by the user
 });
 
-const DynamicForm = ({ module, submodule }) => {
+const DynamicForm = ({ module, submodule, profileData }) => { 
   console.log(`Rendering DynamicForm Component with module: ${module}, submodule: ${submodule}`);
+  
   const [formData, setFormData] = useState({});
   const [fields, setFields] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const hasFetched = useRef(false); // Ref to track if API call was already made
 
-  // Fetch form fields on mount
   useEffect(() => {
     if (hasFetched.current) return; // Skip API call if already fetched
     hasFetched.current = true; // Mark as fetched
@@ -62,6 +62,17 @@ const DynamicForm = ({ module, submodule }) => {
     fetchFields();
   }, [module, submodule]); // Dependency array ensures the call runs only when module/submodule changes
 
+  useEffect(() => {
+    if (profileData) {
+      const updatedFormData = {};
+      fields.forEach((field) => {
+        // Handle null values for each field based on the /details data
+        updatedFormData[field.fieldName] = profileData[field.fieldName] || '';
+      });
+      setFormData(updatedFormData);
+    }
+  }, [profileData, fields]);
+
   if (loading) {
     return <p>Loading...</p>;
   }
@@ -96,7 +107,7 @@ const DynamicForm = ({ module, submodule }) => {
             id={field.fieldName}
             name={field.fieldName}
             placeholder={field.placeholder}
-            value={formData[field.fieldName] || ''}
+            value={formData[field.fieldName] || ''} // Use data from /details or empty string
             onChange={(e) => {
               const { value } = e.target;
               if (validateInput(field, value)) {
@@ -117,6 +128,7 @@ const DynamicForm = ({ module, submodule }) => {
 DynamicForm.propTypes = {
   module: PropTypes.string.isRequired,
   submodule: PropTypes.string,
+  profileData: PropTypes.object,
 };
 
 export default React.memo(DynamicForm); // Use React.memo to prevent unnecessary re-renders
