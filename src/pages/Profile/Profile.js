@@ -1,44 +1,61 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext, useRef } from 'react';
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
 import ProfileImage from '../../components/ImageComponent/ImageComponent';
 import './Profile.css';
 import TextSection from '../../components/TextSection/TextSection';
 import Cookies from 'js-cookie';
-import { makePostRequest } from '../../utility/RestCallUtility'; // Import the makeRequest utility function
-import AuthContext from '../../utility/AuthContext'; // Import AuthContext for authentication state management
-import { useNavigate } from 'react-router-dom'; // For programmatic navigation
-import UploadModal from '../../components/UploadModal/UploadModal'; // Import the UploadModal component
+import { makePostRequest } from '../../utility/RestCallUtility'; 
+import AuthContext from '../../utility/AuthContext'; 
+import { useNavigate } from 'react-router-dom';
+import UploadModal from '../../components/UploadModal/UploadModal'; 
 import DynamicForm from '../../components/DynamicForm/DynamicForm';
 
 const Profile = () => {
-  const { isAuthenticated } = useContext(AuthContext); // Access authentication context
-  const navigate = useNavigate(); // For navigation
-  const [profileData, setProfileData] = useState(null); // State to hold profile data
-  const [error, setError] = useState(null); // State to hold any error messages
-  const [loading, setLoading] = useState(true); // State to manage loading state
-  const [isModalOpen, setIsModalOpen] = useState(false); // State to manage modal visibility
+  const { isAuthenticated, loading: authLoading } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const [profileData, setProfileData] = useState(null);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const hasFetchedProfile = useRef(false); 
 
-  // Fetch customer profile data on component mount
   useEffect(() => {
+    console.log('useEffect triggered');
+
+    // Prevent duplicate API calls during strict mode or re-renders
+    if (hasFetchedProfile.current) {
+      console.log('Profile already fetched, skipping API call...');
+      return;
+    }
+
+    // Set the flag early to avoid race conditions
+    hasFetchedProfile.current = true;
+
+    if (authLoading) {
+      console.log('Auth is loading, skipping profile fetch...');
+      return;
+    }
+
     if (!isAuthenticated) {
-      // If not authenticated, redirect to home or sign in
-      navigate('/'); 
-      return; // Exit the effect early
+      console.log('User not authenticated, redirecting to home...');
+      navigate('/');
+      return;
     }
 
     const fetchProfileData = async () => {
+      console.log('fetchProfileData function invoked');
       const customerId = Cookies.get('customerId');
+      console.log(`Customer ID from cookie: ${customerId}`);
+
       if (!customerId) {
+        console.log('No customer ID found in cookies');
         setError('Customer ID not found');
-        console.log('Customer ID not found in cookies');
         setLoading(false);
         return;
       }
 
-      console.log('Customer ID from cookie:', customerId);
-
-      const baseURL = process.env.REACT_APP_BASE_PROFILE_URL; // Replace with the actual base URL
+      const baseURL = process.env.REACT_APP_BASE_PROFILE_URL;
       const endpoint = '/v1/customer/details';
 
       const payload = {
@@ -47,25 +64,26 @@ const Profile = () => {
       };
 
       try {
+        console.log('Calling API to fetch profile data...');
         const response = await makePostRequest(baseURL, endpoint, payload, {
           headers: {
-            Authorization: `Bearer YOUR_AUTH_TOKEN`, // Replace with actual token
+            Authorization: `Bearer YOUR_AUTH_TOKEN`, 
             appLang: 'en',
             requestTimestamp: new Date().getTime(),
           },
         });
 
-        console.log('Profile API Response:', response);
+        console.log('API Response:', response);
 
         if (response.statusCode === 2000) {
-          console.log('Response data:', response.data);
+          console.log('Successful response from API');
           setProfileData(response.data);
         } else {
-          console.log('Error in response:', response.message);
+          console.log(`Error in response: ${response.message}`);
           setError(response.message);
         }
       } catch (err) {
-        console.error('Error fetching profile data:', err);
+        console.error('Error during API call:', err);
         setError('Failed to fetch profile data');
       } finally {
         setLoading(false);
@@ -73,7 +91,17 @@ const Profile = () => {
     };
 
     fetchProfileData();
-  }, [isAuthenticated, navigate]); // Add dependencies to the useEffect
+  }, [isAuthenticated, authLoading, navigate]);
+
+  const openModal = () => {
+    console.log('Opening modal');
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    console.log('Closing modal');
+    setIsModalOpen(false);
+  };
 
   const heading = loading
     ? `Welcome`
@@ -89,26 +117,16 @@ const Profile = () => {
     ? 'Failed to load profile information.'
     : '';
 
-  // Function to open the modal
-  const openModal = () => {
-    setIsModalOpen(true);
-  };
-
-  // Function to close the modal
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
-
   return (
     <>
       <Header />
       <div className="profile-page">
         <ProfileImage />
-        
-        {/* Button to open the upload modal */}
-        <button onClick={openModal} className="upload-button">Change Profile Photo</button>
-        
-        {/* Conditionally render the UploadModal */}
+
+        <button onClick={openModal} className="upload-button">
+          Change Profile Photo
+        </button>
+
         {isModalOpen && <UploadModal onClose={closeModal} />}
 
         <TextSection heading={heading} paragraph={paragraph} />

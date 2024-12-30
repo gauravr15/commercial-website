@@ -35,6 +35,8 @@ function App() {
     return <div>Loading...</div>; // Loading state
   }
 
+  console.log("isAuthenticated:", isAuthenticated);  // Debug log for auth state
+
   return (
     <div className="App">
       <Router>

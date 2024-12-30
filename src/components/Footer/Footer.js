@@ -4,6 +4,7 @@ import React from 'react';
 import './Footer.css';  // Optionally create a CSS file for styling
 
 const Footer = () => {
+  console.log('Rendering Footer Component');
   return (
     <footer className="footer">
       <div className="footer-container">

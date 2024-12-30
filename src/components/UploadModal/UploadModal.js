@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './UploadModal.css';
 
 const UploadModal = ({ onClose }) => {
+  console.log('Rendering UploadModal Component');
   const [files, setFiles] = useState([]); // State for holding selected files
   const [dragging, setDragging] = useState(false); // State to track drag-and-drop
 

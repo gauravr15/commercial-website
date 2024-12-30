@@ -7,6 +7,7 @@ import './Header.css';
 import logo from '../../assets/logo.png';
 
 const Header = () => {
+  console.log('Rendering Header Component');
   const [isExpanded, setIsExpanded] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
