@@ -16,7 +16,7 @@ const Banner = () => {
     const fetchBanners = async () => {
       console.log('Fetching banners...');
       try {
-        const response = await makePublicGetRequest(BANNER_IMAGE_BASE_URL, '/banners'); // Use public request
+        const response = await makePublicGetRequest(BANNER_IMAGE_BASE_URL, '/v1/images/banners'); // Use public request
 
         // Validate response based on ApiResponseDTO format
         const { statusCode, message, data } = response;

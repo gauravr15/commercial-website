@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
+import Cookies from 'js-cookie';
 import { makePostRequest } from '../../utility/RestCallUtility'; // Import the utility function
 import './DynamicForm.css'; // Import CSS for styling the form
+import MessageModal from '../../components/MessageModal/MessageModal'; // Import the MessageModal component
 
 // DTO to parse each field in the response
 const parseField = (field) => ({
@@ -15,13 +17,16 @@ const parseField = (field) => ({
   isEditable: field.userEditable, // If the field is editable by the user
 });
 
-const DynamicForm = ({ module, submodule, profileData }) => { 
+const DynamicForm = ({ module, submodule, profileData, customerId }) => {
   console.log(`Rendering DynamicForm Component with module: ${module}, submodule: ${submodule}`);
   
   const [formData, setFormData] = useState({});
   const [fields, setFields] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [isSubmitEnabled, setIsSubmitEnabled] = useState(false); // Track if submit is enabled
+  const [modalMessage, setModalMessage] = useState(''); // Message for the modal
+  const [isModalVisible, setIsModalVisible] = useState(false); // To control modal visibility
   const hasFetched = useRef(false); // Ref to track if API call was already made
 
   useEffect(() => {
@@ -37,13 +42,7 @@ const DynamicForm = ({ module, submodule, profileData }) => {
       const baseURL = process.env.REACT_APP_BASE_REF_DATA_URL;
       const endpoint = '/v1/form/profile';
       try {
-        const response = await makePostRequest(baseURL, endpoint, payload, {
-          headers: {
-            Authorization: `Bearer YOUR_AUTH_TOKEN`,
-            appLang: 'en',
-            requestTimestamp: new Date().getTime(),
-          },
-        });
+        const response = await makePostRequest(baseURL, endpoint, payload);
   
         if (response.statusCode === 2000) {
           // Parse the response data and store it in the state
@@ -73,6 +72,61 @@ const DynamicForm = ({ module, submodule, profileData }) => {
     }
   }, [profileData, fields]);
 
+  const handleFieldChange = (e, field) => {
+    const { value } = e.target;
+    const updatedFormData = { ...formData, [field.fieldName]: value };
+    setFormData(updatedFormData);
+
+    // Check if any form data has changed to enable/disable the submit button
+    const isFormChanged = Object.keys(updatedFormData).some(
+      (key) => updatedFormData[key] !== profileData[key]
+    );
+    setIsSubmitEnabled(isFormChanged);
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault(); // Prevent form's default submission behavior
+
+    const customerId = Cookies.get('customerId'); // Get customerId from cookies
+  
+    if (!customerId) {
+      console.error('Customer ID not found.');
+      setError('Customer ID not found.');
+      return;
+    }
+  
+    // Ensure customerId is explicitly included in the payload
+    const payload = {
+      customerId, // Include customerId here
+      ...formData, // Spread other updated form data
+    };
+  
+    const baseURL = process.env.REACT_APP_BASE_PROFILE_URL;
+    const endpoint = "/v1/update/customer/details";
+
+    try {
+      const response = await makePostRequest(baseURL, endpoint, payload);
+  
+      if (response.statusCode === 2000) {
+        // Show success message in modal
+        setModalMessage('Successfully updated customer details');
+        setIsModalVisible(true); // Show the modal
+      } else {
+        setModalMessage(`Error: ${response.message}`);
+        setIsModalVisible(true); // Show the modal
+      }
+    } catch (err) {
+      console.error('Error during form submission:', err);
+      setModalMessage('Failed to update customer details');
+      setIsModalVisible(true); // Show the modal
+    }
+  };
+
+  const closeModal = () => {
+    setIsModalVisible(false); // Close the modal
+    setModalMessage(''); // Reset the message
+  };
+
   if (loading) {
     return <p>Loading...</p>;
   }
@@ -81,47 +135,36 @@ const DynamicForm = ({ module, submodule, profileData }) => {
     return <p className="error-message">{error}</p>;
   }
 
-  // Function to validate input against the regex pattern
-  const validateInput = (field, value) => {
-    if (field.regex) {
-      const regex = new RegExp(field.regex);
-      return regex.test(value);
-    }
-    return true;
-  };
-
-  // Handle form submission
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Form submitted:', formData);
-    // Add further form submission logic if necessary
-  };
-
   return (
-    <form className="dynamic-form" onSubmit={handleSubmit}>
-      {fields.map((field) => (
-        <div className="form-group" key={field.id}>
-          <label htmlFor={field.fieldName}>{field.displayName}</label>
-          <input
-            type={field.inputType || 'text'} // Use inputType or default to text
-            id={field.fieldName}
-            name={field.fieldName}
-            placeholder={field.placeholder}
-            value={formData[field.fieldName] || ''} // Use data from /details or empty string
-            onChange={(e) => {
-              const { value } = e.target;
-              if (validateInput(field, value)) {
-                setFormData({ ...formData, [field.fieldName]: value });
-              }
-            }}
-            disabled={!field.isEditable}
-          />
-        </div>
-      ))}
-      <button type="submit" className="submit-button" disabled>
-        Submit (Disabled)
-      </button>
-    </form>
+    <div>
+      <form className="dynamic-form" onSubmit={handleSubmit}>
+        {fields.map((field) => (
+          <div className="form-group" key={field.id}>
+            <label htmlFor={field.fieldName}>{field.displayName}</label>
+            <input
+              type={field.inputType || 'text'} // Use inputType or default to text
+              id={field.fieldName}
+              name={field.fieldName}
+              placeholder={field.placeholder}
+              value={formData[field.fieldName] || ''} // Use data from /details or empty string
+              onChange={(e) => handleFieldChange(e, field)}
+              disabled={!field.isEditable}
+            />
+          </div>
+        ))}
+        <button 
+          type="submit" 
+          className="submit-button" 
+          disabled={!isSubmitEnabled} // Disable button if no changes
+        >
+          Submit
+        </button>
+      </form>
+
+      {isModalVisible && (
+        <MessageModal message={modalMessage} onClose={closeModal} />
+      )}
+    </div>
   );
 };
 
@@ -129,6 +172,7 @@ DynamicForm.propTypes = {
   module: PropTypes.string.isRequired,
   submodule: PropTypes.string,
   profileData: PropTypes.object,
+  customerId: PropTypes.string.isRequired,
 };
 
 export default React.memo(DynamicForm); // Use React.memo to prevent unnecessary re-renders

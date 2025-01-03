@@ -4,10 +4,10 @@ import Footer from '../../components/Footer/Footer';
 import ProfileImage from '../../components/ImageComponent/ImageComponent';
 import './Profile.css';
 import Cookies from 'js-cookie';
-import { makePostRequest } from '../../utility/RestCallUtility'; 
-import AuthContext from '../../utility/AuthContext'; 
+import { makePostRequest } from '../../utility/RestCallUtility';
+import AuthContext from '../../utility/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import UploadModal from '../../components/UploadModal/UploadModal'; 
+import UploadModal from '../../components/UploadModal/UploadModal';
 import DynamicForm from '../../components/DynamicForm/DynamicForm';
 
 const Profile = () => {
@@ -16,38 +16,28 @@ const Profile = () => {
   const [profileData, setProfileData] = useState(null);
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const hasFetchedProfile = useRef(false); 
+  const hasFetchedProfile = useRef(false);
 
   useEffect(() => {
-    console.log('useEffect triggered');
-
-    // Prevent duplicate API calls during strict mode or re-renders
     if (hasFetchedProfile.current) {
-      console.log('Profile already fetched, skipping API call...');
       return;
     }
 
-    // Set the flag early to avoid race conditions
     hasFetchedProfile.current = true;
 
     if (authLoading) {
-      console.log('Auth is loading, skipping profile fetch...');
       return;
     }
 
     if (!isAuthenticated) {
-      console.log('User not authenticated, redirecting to home...');
       navigate('/');
       return;
     }
 
     const fetchProfileData = async () => {
-      console.log('fetchProfileData function invoked');
       const customerId = Cookies.get('customerId');
-      console.log(`Customer ID from cookie: ${customerId}`);
 
       if (!customerId) {
-        console.log('No customer ID found in cookies');
         setError('Customer ID not found');
         return;
       }
@@ -61,40 +51,26 @@ const Profile = () => {
       };
 
       try {
-        console.log('Calling API to fetch profile data...');
-        const response = await makePostRequest(baseURL, endpoint, payload, {
-          headers: {
-            Authorization: `Bearer YOUR_AUTH_TOKEN`, 
-            appLang: 'en',
-            requestTimestamp: new Date().getTime(),
-          },
-        });
-
-        console.log('API Response:', response);
+        const response = await makePostRequest(baseURL, endpoint, payload);
 
         if (response.statusCode === 2000) {
-          console.log('Successful response from API');
           setProfileData(response.data);
         } else {
-          console.log(`Error in response: ${response.message}`);
           setError(response.message);
         }
       } catch (err) {
-        console.error('Error during API call:', err);
         setError('Failed to fetch profile data');
-      } 
+      }
     };
 
     fetchProfileData();
   }, [isAuthenticated, authLoading, navigate]);
 
   const openModal = () => {
-    console.log('Opening modal');
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
-    console.log('Closing modal');
     setIsModalOpen(false);
   };
 
@@ -111,7 +87,12 @@ const Profile = () => {
         {isModalOpen && <UploadModal onClose={closeModal} />}
 
         {error && <p className="error-message">{error}</p>}
-        <DynamicForm module="profile" submodule="details" profileData={profileData} />
+
+        <DynamicForm 
+          module="profile" 
+          submodule="details" 
+          profileData={profileData}
+        />
       </div>
       <Footer />
     </>
