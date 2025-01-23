@@ -46,7 +46,6 @@ const SignInModal = ({ onClose, onSignInSuccess }) => {
     const payload = {
       email,
       mobile,
-      isTransactionEnabled: true,
       customerType: 'CUSTOMER',
       auth: { password },
       ...(isSignUp && { firstName, lastName }), // Add extra fields for SignUp

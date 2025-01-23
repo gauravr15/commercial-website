@@ -1,43 +1,67 @@
 import React, { useState } from 'react';
+import Cookies from 'js-cookie'; // Import for fetching customerId from cookies
+import { makeMultipartPostRequest } from '../../utility/RestCallUtility'; // Use the correct method
 import './UploadModal.css';
 
 const UploadModal = ({ onClose }) => {
   console.log('Rendering UploadModal Component');
-  const [files, setFiles] = useState([]); // State for holding selected files
-  const [dragging, setDragging] = useState(false); // State to track drag-and-drop
+  const [files, setFiles] = useState([]);
+  const [dragging, setDragging] = useState(false);
 
-  // Handle file selection
   const handleFileChange = (event) => {
     const selectedFiles = Array.from(event.target.files);
     setFiles(selectedFiles);
   };
 
-  // Handle drag over event
   const handleDragOver = (event) => {
     event.preventDefault();
     setDragging(true);
   };
 
-  // Handle drag leave event
   const handleDragLeave = () => {
     setDragging(false);
   };
 
-  // Handle drop event
   const handleDrop = (event) => {
     event.preventDefault();
     setDragging(false);
     const droppedFiles = Array.from(event.dataTransfer.files);
-    setFiles((prevFiles) => [...prevFiles, ...droppedFiles]); // Combine with existing files
+    setFiles((prevFiles) => [...prevFiles, ...droppedFiles]);
   };
 
-  // Handle file upload (this is just a placeholder function)
-  const handleUpload = () => {
-    // Simulate file upload
-    console.log('Uploading files:', files);
-    // You can replace this with your actual upload logic
-    // For example, using an API call to upload the files
-    onClose(); // Close the modal after upload
+  const handleUpload = async () => {
+    if (files.length === 0) return;
+
+    // Prepare the form data for the upload
+    const formData = new FormData();
+    formData.append('file', files[0]);  // Appending the file to FormData
+
+    const customerId = Cookies.get('customerId'); // Fetch customerId from cookies
+    const fileType = 'PROFILE_IMG';  // You can adjust this as needed for different file types
+
+    try {
+      // Using makeMultipartPostRequest method to send the file
+      const response = await makeMultipartPostRequest(
+        process.env.REACT_APP_BANNER_IMAGE_BASE_URL, 
+        '/v1/file/upload',
+        formData,
+        {
+          customerId,   // Custom header: customerId
+          userType: 'CUSTOMER',  // Custom header: userType
+          fileType,     // Custom header: fileType
+        }
+      );
+
+      if (response.statusCode === 2000) {
+        alert('Files uploaded successfully!');
+      } else {
+        alert(`Error: ${response.message}`);
+      }
+      onClose();
+    } catch (error) {
+      console.error('Upload failed:', error);
+      alert('Failed to upload files. Please try again.');
+    }
   };
 
   return (
@@ -55,7 +79,7 @@ const UploadModal = ({ onClose }) => {
             type="file"
             multiple
             onChange={handleFileChange}
-            style={{ display: 'none' }} // Hide the file input
+            style={{ display: 'none' }}
             id="fileInput"
           />
           <label htmlFor="fileInput" className="upload-button">
@@ -78,7 +102,9 @@ const UploadModal = ({ onClose }) => {
             Close
           </button>
         </div>
-        <button className="modal-close" onClick={onClose}>&times;</button>
+        <button className="modal-close" onClick={onClose}>
+          &times;
+        </button>
       </div>
     </div>
   );

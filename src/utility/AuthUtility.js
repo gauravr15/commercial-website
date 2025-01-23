@@ -39,13 +39,18 @@ export const refreshAccessToken = async () => {
   if (!refreshToken) return null;
 
   try {
-    const response = await makePublicPostRequest('/auth/refresh', { refreshToken });
+    // Use your environment variable for the base URL
+    const baseURL = process.env.REACT_APP_BASE_PROFILE_URL;  // Base URL from your .env
+    const endpoint = '/v1/token/refresh'; // Change this endpoint as required
+
+    // Call the refresh endpoint with the base URL and refresh token
+    const response = await makePublicPostRequest(baseURL, endpoint, { refreshToken });
     const { accessToken, refreshToken: newRefreshToken } = response.data;
     setTokens(accessToken, newRefreshToken); // Store new tokens
     return accessToken; // Return the new access token
   } catch (error) {
     console.error("Error refreshing access token:", error);
-    clearTokens();
-    return null; // Return null if the refresh token is invalid or expired
+    clearTokens(); // Clear tokens if refresh fails
+    return null; // Return null to let the calling code handle the redirect
   }
 };

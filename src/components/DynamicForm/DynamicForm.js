@@ -15,7 +15,27 @@ const parseField = (field) => ({
   regex: field.regex, // Regex for validation
   inputType: field.inputType, // Type for the HTML input
   isEditable: field.userEditable, // If the field is editable by the user
+  isDisplay: field.isDisplay, // Ensure isDisplay is parsed
 });
+
+// Helper function to access or set a value in a nested object
+const resolveNestedValue = (obj, path, value = undefined) => {
+  const keys = path.split('.');
+  if (value === undefined) {
+    // Access value
+    return keys.reduce((acc, key) => (acc ? acc[key] : undefined), obj);
+  } else {
+    // Set value
+    return keys.reduce((acc, key, index) => {
+      if (index === keys.length - 1) {
+        acc[key] = value;
+      } else {
+        acc[key] = acc[key] || {};
+      }
+      return acc[key];
+    }, obj);
+  }
+};
 
 const DynamicForm = ({ module, submodule, profileData, customerId }) => {
   console.log(`Rendering DynamicForm Component with module: ${module}, submodule: ${submodule}`);
@@ -65,8 +85,8 @@ const DynamicForm = ({ module, submodule, profileData, customerId }) => {
     if (profileData) {
       const updatedFormData = {};
       fields.forEach((field) => {
-        // Handle null values for each field based on the /details data
-        updatedFormData[field.fieldName] = profileData[field.fieldName] || '';
+        const value = resolveNestedValue(profileData, field.fieldName) || '';
+        resolveNestedValue(updatedFormData, field.fieldName, value);
       });
       setFormData(updatedFormData);
     }
@@ -74,13 +94,18 @@ const DynamicForm = ({ module, submodule, profileData, customerId }) => {
 
   const handleFieldChange = (e, field) => {
     const { value } = e.target;
-    const updatedFormData = { ...formData, [field.fieldName]: value };
+    const updatedFormData = { ...formData };
+
+    // Update nested field values correctly
+    resolveNestedValue(updatedFormData, field.fieldName, value);
     setFormData(updatedFormData);
 
     // Check if any form data has changed to enable/disable the submit button
-    const isFormChanged = Object.keys(updatedFormData).some(
-      (key) => updatedFormData[key] !== profileData[key]
-    );
+    const isFormChanged = fields.some((field) => {
+      const originalValue = resolveNestedValue(profileData, field.fieldName) || '';
+      const currentValue = resolveNestedValue(updatedFormData, field.fieldName);
+      return originalValue !== currentValue;
+    });
     setIsSubmitEnabled(isFormChanged);
   };
 
@@ -97,8 +122,8 @@ const DynamicForm = ({ module, submodule, profileData, customerId }) => {
   
     // Ensure customerId is explicitly included in the payload
     const payload = {
-      customerId, // Include customerId here
-      ...formData, // Spread other updated form data
+      customerId, 
+      ...formData, 
     };
   
     const baseURL = process.env.REACT_APP_BASE_PROFILE_URL;
@@ -108,23 +133,22 @@ const DynamicForm = ({ module, submodule, profileData, customerId }) => {
       const response = await makePostRequest(baseURL, endpoint, payload);
   
       if (response.statusCode === 2000) {
-        // Show success message in modal
         setModalMessage('Successfully updated customer details');
-        setIsModalVisible(true); // Show the modal
+        setIsModalVisible(true); 
       } else {
         setModalMessage(`Error: ${response.message}`);
-        setIsModalVisible(true); // Show the modal
+        setIsModalVisible(true); 
       }
     } catch (err) {
       console.error('Error during form submission:', err);
       setModalMessage('Failed to update customer details');
-      setIsModalVisible(true); // Show the modal
+      setIsModalVisible(true); 
     }
   };
 
   const closeModal = () => {
-    setIsModalVisible(false); // Close the modal
-    setModalMessage(''); // Reset the message
+    setIsModalVisible(false); 
+    setModalMessage(''); 
   };
 
   if (loading) {
@@ -138,15 +162,17 @@ const DynamicForm = ({ module, submodule, profileData, customerId }) => {
   return (
     <div>
       <form className="dynamic-form" onSubmit={handleSubmit}>
-        {fields.map((field) => (
+        {fields
+          .filter(field => field.isDisplay) // Filter out fields where isDisplay is false
+          .map((field) => (
           <div className="form-group" key={field.id}>
             <label htmlFor={field.fieldName}>{field.displayName}</label>
             <input
-              type={field.inputType || 'text'} // Use inputType or default to text
+              type={field.inputType || 'text'} 
               id={field.fieldName}
               name={field.fieldName}
               placeholder={field.placeholder}
-              value={formData[field.fieldName] || ''} // Use data from /details or empty string
+              value={resolveNestedValue(formData, field.fieldName) || ''} 
               onChange={(e) => handleFieldChange(e, field)}
               disabled={!field.isEditable}
             />
@@ -155,7 +181,7 @@ const DynamicForm = ({ module, submodule, profileData, customerId }) => {
         <button 
           type="submit" 
           className="submit-button" 
-          disabled={!isSubmitEnabled} // Disable button if no changes
+          disabled={!isSubmitEnabled} 
         >
           Submit
         </button>
@@ -175,4 +201,4 @@ DynamicForm.propTypes = {
   customerId: PropTypes.string.isRequired,
 };
 
-export default React.memo(DynamicForm); // Use React.memo to prevent unnecessary re-renders
+export default React.memo(DynamicForm);
